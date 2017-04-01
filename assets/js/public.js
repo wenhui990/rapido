@@ -27,7 +27,7 @@ $(document).on('click','.nvDescp',function(){
 		success: function(data){
 			console.log(data);
 //			$(".hotspot_money").text(data.sub_title);
-//			$(".hotspots_tit>a").text(data.title);
+			$("h4.modal-title").text(data.title);
 //			$(".source_time").text(" "+timeF(data.created));
 			descp += '<div style="margin:10px auto;" id="header_img"><img src="'+data.cover+'" alt="热点图" class="hotspot_img" /></div>';
 			var a = $("<div></div>");
@@ -41,17 +41,14 @@ $(document).on('click','.nvDescp',function(){
 				} else if(type === 15){//数据
 					var _id ='';
 					if (e.descp) {
-						console.log(e.descp.length);
 						res.descp.length<0?echarts_data=res.descp:echarts_data=JSON.parse(res.descp);
 						_id = echarts_data.id_val;
-						console.log(echarts_data)
 					}
 					descp += '<div id="'+_id+'" style="min-height:500px;"></div>'
 				}else{
 					descp += res.descp
 				}
 			});
-			console.log(descp);
 			$("#modalHtml").append(descp);
 		},
 		error: function(data,err){
@@ -59,6 +56,48 @@ $(document).on('click','.nvDescp',function(){
 		}
 	});
 });
+
+// 点击通过审核
+$(document).on("click",".pass",function(){
+	var _id = $(this).attr("data-id");
+	var type = "post",
+		_url = _href + interfacelist.feed + _id + "/pass";
+	manageNV(type,_url);
+});
+
+// 点击不通过
+$(document).on("click",".nopass",function(){
+	var _id = $(this).attr("data-id");
+	var type = "post",
+		_url = _href + interfacelist.feed + _id + "/nopass";
+	manageNV(type,_url);
+});
+
+// 点击删除
+$(document).on("click",".delete",function(){
+	var _id = $(this).attr("data-id");
+	var type = "delete",
+		_url = _href + interfacelist.feed + _id +'?token=' + localStorage.token;
+	manageNV(type,_url);
+});
+
+// 管理新闻和观点（审核、删除、通过不通过）
+function manageNV(type,_url){
+	$.ajax({
+		type: type,
+		url: _url,
+		async:true,
+		data:{
+			token: localStorage.token
+		},
+		success: function(data){
+			$("#modalHtml").html('');
+			console.log(data);
+			$("#modalHtml").append(data);
+		}
+	});
+}
+
 
 
 // 加载用户列表方法

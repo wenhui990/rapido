@@ -3,3 +3,4 @@
 .leftMenu a{color: #fff;font-size: 16px;}
 .leftMenu .list-group{margin-bottom: 0 !important;}
 .leftMenu .panel-heading{background: #171a20;color: #fff;}
+#modalHtml img{clear: both; display: block; margin:auto; }
