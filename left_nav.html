@@ -1,0 +1,71 @@
+<div class="panel-group table-responsive" id="nav_list" role="tablist">
+	<div class="panel panel-default leftMenu">	
+		<li class="">
+			<a href="index.html"><i class="fa fa-home"></i> <span class="title"> 首页 </span><span class="label label-default pull-right ">3</span> </a>
+		</li>
+	</div>
+	<div class="panel panel-default leftMenu">
+		<li class=""><a href="user.html">
+			<i class="fa fa-desktop"></i>
+        	用户管理
+        	<span class="glyphicon glyphicon-chevron-right right"></span>
+		</a></li>
+	</div>
+	<div class="panel panel-default leftMenu">
+	    <!-- 利用data-target指定要折叠的分组列表 -->
+	    <div class="panel-heading" id="collapseListGroupHeading1" data-toggle="collapse" data-target="#collapseListGroup1" role="tab" >
+	        <h5
+	        	 class="panel-title">
+	        	<i class="fa fa-desktop"></i>
+	            	文章管理
+	            <span class="glyphicon glyphicon-chevron-down right"></span>
+	        </h4>
+	    </div>
+	    <!-- .panel-collapse和.collapse标明折叠元素 .in表示要显示出来 -->
+	    <div id="collapseListGroup1" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="collapseListGroupHeading1">
+	        <ul class="list-group">
+	          <li class="">
+	            <!-- 利用data-target指定URL -->
+	            <a class="menu-item-left navlist_a" href="news.html" data-target="news.html">
+	                <span class="glyphicon glyphicon-triangle-right"></span>新闻
+	            </a>
+	          </li>
+	          <li class="">
+	            <!-- 利用data-target指定URL -->
+	            <a class="menu-item-left navlist_a" href="viewpoint.html">
+	                <span class="glyphicon glyphicon-triangle-right"></span>观点
+	            </a>
+	          </li>
+	        </ul>
+	    </div>
+	</div>
+	<div class="panel panel-default leftMenu">
+	    <div class="panel-heading" id="collapseListGroupHeading2" data-toggle="collapse" data-target="#collapseListGroup2" role="tab" >
+	        <h5
+	        	 class="panel-title">
+	        	<i class="fa fa-desktop"></i>
+	        	数据管理
+	        	<span class="glyphicon glyphicon-chevron-down right"></span>
+	        </h4>
+	    </div>
+	    <div id="collapseListGroup2" class="panel-collapse collapse" role="tabpane2" aria-labelledby="collapseListGroupHeading2">
+	        <ul class="list-group">
+	          <li class="list-group-item" style="background: #171a20;">
+	            <a class="menu-item-left navlist_a">
+	                <span class="glyphicon glyphicon-triangle-right"></span>指标分组
+	            </a>
+	          </li>
+	          <li class="list-group-item navlist_a" style="background: #171a20;">
+	            <a class="menu-item-left">
+	                <span class="glyphicon glyphicon-triangle-right"></span>指标
+	            </a>
+	          </li>
+	          <li class="list-group-item navlist_a" style="background: #171a20;">
+	            <a class="menu-item-left">
+	                <span class="glyphicon glyphicon-triangle-right"></span>国家
+	            </a>
+	          </li>
+	        </ul>
+	    </div>
+	</div>
+</div>

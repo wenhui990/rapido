@@ -1,0 +1,5 @@
+#pages{text-align: center;}
+.leftMenu{border-radius: 0 !important;margin: 0 !important;font-size: 16px !important;border-bottom: 1px solid silver;background: #171a20 !important;}
+.leftMenu a{color: #fff;font-size: 16px;}
+.leftMenu .list-group{margin-bottom: 0 !important;}
+.leftMenu .panel-heading{background: #171a20;color: #fff;}
