@@ -19,6 +19,14 @@ $(document).on("click",".panel-heading",function(e){
     $(this).find("span").toggleClass("glyphicon-chevron-right");
 });
 
+// 左侧导航鼠标移入移出事件
+$(document).on("mouseenter",".lists_c",function(){
+	$(this).css("background","#e66b6b");
+});
+$(document).on("mouseleave",".lists_c",function(){
+	$(this).css("background","#22262f");
+});
+
 // 点击详情
 $(document).on('click','.nvDescp',function(){
 	var _id = $(this).attr("data-id"),descp='';
