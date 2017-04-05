@@ -2,5 +2,7 @@
 .leftMenu{border-radius: 0 !important;margin: 0 !important;font-size: 16px !important;border-bottom: 1px solid silver;background: #171a20 !important;}
 .leftMenu a{color: #fff;font-size: 16px;}
 .leftMenu .list-group{margin-bottom: 0 !important;}
+.leftMenu .list-group li{background: #002A80;text-indent: 1em;line-height: 30px;}
+.leftMenu .list-group li a{padding: 0 15px;}
 .leftMenu .panel-heading{background: #171a20;color: #fff;}
 #modalHtml img{clear: both; display: block; margin:auto; }

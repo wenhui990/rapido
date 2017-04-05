@@ -13,6 +13,12 @@ $(document).on('click',".navlist_a",function(){
 	window.location.href = $(this).attr("href");
 });
 
+$(document).on("click",".panel-heading",function(e){
+    /*切换折叠指示图标*/
+    $(this).find("span").toggleClass("glyphicon-chevron-down");
+    $(this).find("span").toggleClass("glyphicon-chevron-right");
+});
+
 // 点击详情
 $(document).on('click','.nvDescp',function(){
 	var _id = $(this).attr("data-id"),descp='';
@@ -26,21 +32,19 @@ $(document).on('click','.nvDescp',function(){
 		},
 		success: function(data){
 			console.log(data);
-//			$(".hotspot_money").text(data.sub_title);
 			$("h4.modal-title").text(data.title);
-//			$(".source_time").text(" "+timeF(data.created));
 			descp += '<div style="margin:10px auto;" id="header_img"><img src="'+data.cover+'" alt="热点图" class="hotspot_img" /></div>';
 			var a = $("<div></div>");
 			data.resources.forEach(function(res,inx){
-				console.log(res);
+//				console.log(res);
 				var type = res.type;
 				if (type === 12) {//图片
-					descp += '<img src="' + e.uri + '">'
+					descp += '<img src="' + res.uri + '">'
 				}else if (type === 13) {//文本
-					descp += '<p>'+e.descp+'</p>'
+					descp += '<p>'+res.descp+'</p>'
 				} else if(type === 15){//数据
 					var _id ='';
-					if (e.descp) {
+					if (res.descp) {
 						res.descp.length<0?echarts_data=res.descp:echarts_data=JSON.parse(res.descp);
 						_id = echarts_data.id_val;
 					}
@@ -76,9 +80,13 @@ $(document).on("click",".nopass",function(){
 // 点击删除
 $(document).on("click",".delete",function(){
 	var _id = $(this).attr("data-id");
+	var _this = $(this);
 	var type = "delete",
 		_url = _href + interfacelist.feed + _id +'?token=' + localStorage.token;
-	manageNV(type,_url);
+	$(document).on('click','.del_btn',function(){
+		manageNV(type,_url);
+		_this.parents('tr').remove();
+	});
 });
 
 // 管理新闻和观点（审核、删除、通过不通过）
@@ -91,9 +99,13 @@ function manageNV(type,_url){
 			token: localStorage.token
 		},
 		success: function(data){
-			$("#modalHtml").html('');
-			console.log(data);
-			$("#modalHtml").append(data);
+			if (type==='delete') {
+				console.log("delete"+data);
+			} else{
+				$("#modalHtml").html('');
+				console.log("其他"+data);
+				$("#modalHtml").append(data);
+			}
 		}
 	});
 }
@@ -198,14 +210,14 @@ function newViewpoint(n,type,status){
 				if (e.status===0) {
 					statushtml ='<a href="#" class="btn btn-light-blue pass" data-id="'+e.id+'" title="审核通过">通过</a>'+
 						'		<a href="#" class="btn btn-light-blue nopass" data-id="'+e.id+'" title="不通过">不通过</a>'+
-						'		<a href="#" class="btn btn-red delete" data-id="'+e.id+'" title="删除新闻">删除</a>';
+						'		<a href="#" class="btn btn-red delete" data-id="'+e.id+'" data-toggle="modal" data-target="#myDelModal" title="删除新闻">删除</a>';
 				} else if(e.status===1){
-					statushtml ='<a href="#" class="btn btn-red delete" data-id="'+e.id+'" title="删除新闻">删除</a>';
+					statushtml ='<a href="#" class="btn btn-red delete" data-id="'+e.id+'" data-toggle="modal" data-target="#myDelModal" title="删除新闻">删除</a>';
 				}else if(e.status=== (-100)){
 					statushtml ='';
 				}else if(e.status=== (-1)){
 					statushtml ='<a href="#" class="btn btn-light-blue pass" data-id="'+e.id+'" title="审核通过">通过</a>'+
-						'		<a href="#" class="btn btn-red delete" data-id="'+e.id+'" title="删除新闻">删除</a>';
+						'		<a href="#" class="btn btn-red delete" data-id="'+e.id+'" data-toggle="modal" data-target="#myDelModal" title="删除新闻">删除</a>';
 				}
 				var html = '<tr><td class="center">'+e.id+'</td>'+
 						'<td><a href="http://m.jjrb.grsx.cc/'+_src+'.html?id='+e.id+'" target="_blank">'+e.title+'</a></td>'+
