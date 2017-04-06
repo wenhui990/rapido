@@ -1,8 +1,72 @@
-#pages{text-align: center;}
-.leftMenu{border-radius: 0 !important;margin: 0 !important;font-size: 16px !important;background: #171a20 !important;}
-.leftMenu a{color: #fff;font-size: 16px;border: 0 !important;}
-.leftMenu .list-group{margin-bottom: 0 !important;}
-.leftMenu .list-group li{background: #22262f;text-indent: 1em;line-height: 30px;}
-.leftMenu .list-group li a{padding: 0 15px;}
-.leftMenu .panel-heading{background: #171a20;color: #fff;}
-#modalHtml img{clear: both; display: block; margin:auto; }
+.none {
+	display: none;
+}
+
+#pages {
+	text-align: center;
+}
+
+.leftMenu {
+	border-radius: 0 !important;
+	margin: 0 !important;
+	font-size: 16px !important;
+	background: #171a20 !important;
+}
+
+.leftMenu a {
+	color: #fff;
+	font-size: 16px;
+	border: 0 !important;
+}
+
+.leftMenu .list-group {
+	margin-bottom: 0 !important;
+}
+
+.leftMenu .list-group li {
+	background: #22262f;
+	text-indent: 1em;
+	line-height: 30px;
+}
+
+.leftMenu .list-group li a {
+	padding: 0 15px;
+}
+
+.leftMenu .panel-heading {
+	background: #171a20;
+	color: #fff;
+}
+
+#modalHtml img {
+	clear: both;
+	display: block;
+	margin: auto;
+}
+
+
+/* 指标分组样式  */
+#indicator_datas input {
+	background: #fff;
+}
+.edit_name_descp span{
+	margin: 0 6px;
+}
+.edit_ok{
+	color: #18d203;
+}
+.edit_change{
+	color: red;
+}
+.indicator_edit{
+	margin-left: 10px;
+}
+#add_indicator_group{
+	position: absolute;
+    right: 40px;
+    top: 8px;
+}
+.del_indicator_group{
+	color: red;
+	font-size: 16px;
+}

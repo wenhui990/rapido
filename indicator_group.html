@@ -232,7 +232,10 @@
 					<div class="container">
 						<div class="row">
 							<div class="col-sm-12">
-								<div class="tabbable">
+								<div class="tabbable table-hover">
+									<div id="add_indicator_group">
+										<a href="javascript:;" class="btn btn-default btn-sm" data-id="" data-toggle="modal" data-target="#myAddModal" title="添加指标分组"><span class="glyphicon glyphicon-plus"></span></a>
+									</div>
 									<ul class="nav nav-tabs tab-padding tab-space-3 tab-blue" id="myTab4">
 										<li class="active">
 											<a data-toggle="tab" href="#panel_overview">
@@ -248,19 +251,35 @@
 														<th class="center">#
 														</th>
 														<th>名称</th>
-														<th class="hidden-xs">详细</th>
+														<th class="hidden-xs">详细描述</th>
 														<th>指标</th>
 														<th class="hidden-xs">类型</th>
+														<th>操作</th>
 													</tr>
 												</thead>
-												<tbody>	
+												<tbody id="indicator_group_datas">	
 													<tr>
 														<td class="center">21
 														</td>
-														<td>Public Sector</td>
-														<td class="hidden-xs">详细内容</td>
-														<td>指标</td>
+														<td>
+															<input type="text" name="indicatorName" id="indicatorName" value="1321321" disabled="disabled" />
+															<a href="javascript:;" class="btn btn-default btn-sm indicator_edit" data-id="'+e.id+'" title="修改名称"><span class="glyphicon glyphicon-edit"></span></a>
+															<span class="edit_name_descp none">
+																<span class="glyphicon glyphicon-ok edit_ok"></span>
+																<span class="glyphicon glyphicon-remove edit_change"></span>
+															</span>
+														</td>
+														<td class="hidden-xs">
+															<input type="text" name="indicatorDescp" id="indicatorDescp" value="31231" disabled="disabled" />
+															<a href="javascript:;" class="btn btn-default btn-sm indicator_edit" data-id="'+e.id+'" title="修改描述"><span class="glyphicon glyphicon-edit"></span></a>
+															<span class="edit_name_descp none">
+																<span class="glyphicon glyphicon-ok edit_ok"></span>
+																<span class="glyphicon glyphicon-remove edit_change"></span>
+															</span>
+														</td>
+														<td><a href="indicator_group_desc.html?id=21">指标</a></td>
 														<td class="hidden-xs">类型1</td>
+														<td><a href="javascript:;" class="del_indicator_group" data-toggle="modal" data-target="#myDelModal" data-id="" title="删除分组指标"><span class="glyphicon glyphicon-remove-sign"></span></a></td>
 													</tr>
 												</tbody>
 											</table>
@@ -287,6 +306,42 @@
 					</div>
 				</div>
 				<!-- end: PAGE -->
+			</div>
+			<!-- 删除指标分组弹出模版 -->
+			<div class="modal fade" id="myDelModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+			  <div class="modal-dialog" role="document">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			        <h4 class="modal-title">删除</h4>
+			      </div>
+			      <div class="modal-body">
+			        确定删除吗？
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			        <button type="button" data-dismiss="modal" class="btn btn-success del_btn">确定</button>
+			      </div>
+			    </div>
+			  </div>
+			</div>
+			<!-- 添加指标分组弹出模版 -->
+			<div class="modal fade" id="myAddModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+			  <div class="modal-dialog" role="document" style="width: 80%;">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			        <h4 class="modal-title">添加指标分组</h4>
+			      </div>
+			      <div class="modal-body">
+			        指标ID:<input type="text" name="" id="" value="" />
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			        <button type="button" class="btn btn-success add_btn">确定</button>
+			      </div>
+			    </div>
+			  </div>
 			</div>
 			<!-- end: MAIN CONTAINER -->
 			<!-- start: FOOTER -->
@@ -367,8 +422,34 @@
 //				SVExamples.init();
 				UIElements.init();
 				
-				//加载用户列表
-				loadUsers(n);
+				//加载分组列表
+				indicatorAndCountryGroup(n,"ig");
+				
+				
+				$(document).on('click','.add_btn',function(){
+					var groupId = 
+					$.ajax({
+						type:"post",
+						url: _href + '/data2/group/'+groupId+'/indicator',
+						async:true,
+						success: function(data){
+							
+						}
+					});
+				});
+				
+				$(document).on('click','.add_btn',function(){
+					var groupId = 
+					$.ajax({
+						type:"delete",
+						url: _href + '/data2/group/'+groupId+'/indicator',
+						async:true,
+						success: function(data){
+							
+						}
+					});
+				});
+				
 				// 点击上一页下一页
 				$(document).on("click","#prvePage,#nextPage",function(){
 					$("#projects").find("tbody").html('');
@@ -390,23 +471,6 @@
 						$("#pageVal").val(1);
 					}
 					loadUsers(pageVal);
-				});
-				// 修改用户角色
-				$(document).on("change",".roles",function(){
-					var role = $(this).val();
-					var _id = $(this).parents("tr").find("td").first().text();
-//					console.log(_id);
-					switch (role){
-						case "0":
-							editRole(_id,role);
-							break;
-						case "1":
-							editRole(_id,role);
-							break;
-						case "9":
-							editRole(_id,role);
-							break;
-					}
 				});
 				
 				

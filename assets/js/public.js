@@ -3,7 +3,11 @@ var _href = "http://api.jjrb.grsx.cc",//"http://test.api.wantscart.com",
 	interfacelist = {
 		user_all: "/user/list",  //所有用户
 		role: "/user/role",
-		feed: "/feed/"
+		feed: "/feed/",
+		group: "/data2/group/",
+		edit_indicator: "/data2/indicator/",  //put + id
+		country: "/data2/country/",
+		indicator: "/data2/indicator/"
 	},n=1;
 
 
@@ -195,7 +199,7 @@ function editRole(_id,roleVal){
 // 新闻观点列表
 function newViewpoint(n,type,status){
 	var _src;
-	console.log(typeof(type))
+//	console.log(typeof(type))
 	if (type==3) {
 		_src = "viewpoint_desc";
 	} else if(type==4){
@@ -212,25 +216,25 @@ function newViewpoint(n,type,status){
 			status: status
 		},
 		success: function(data){
-			console.log(data);panel_all
+//			console.log(data);
 			$.each(data, function(i,e) {
 				var statushtml;
 				if (e.status===0) {
-					statushtml ='<a href="#" class="btn btn-light-blue pass" data-id="'+e.id+'" title="审核通过">通过</a>'+
-						'		<a href="#" class="btn btn-light-blue nopass" data-id="'+e.id+'" title="不通过">不通过</a>'+
-						'		<a href="#" class="btn btn-red delete" data-id="'+e.id+'" data-toggle="modal" data-target="#myDelModal" title="删除新闻">删除</a>';
+					statushtml ='<a href="#" class="btn btn-success btn-xs pass" data-id="'+e.id+'" title="审核通过"><span class="glyphicon glyphicon-ok"></span></a>'+
+						'		<a href="#" class="btn btn-light-blue btn-xs nopass" data-id="'+e.id+'" title="不通过"><span class="glyphicon glyphicon-ban-circle"></span></a>'+
+						'		<a href="#" class="btn btn-red btn-xs delete" data-id="'+e.id+'" data-toggle="modal" data-target="#myDelModal" title="删除新闻"><span class="glyphicon glyphicon-remove"></span></a>';
 				} else if(e.status===1){
-					statushtml ='<a href="#" class="btn btn-red delete" data-id="'+e.id+'" data-toggle="modal" data-target="#myDelModal" title="删除新闻">删除</a>';
+					statushtml ='<a href="#" class="btn btn-red btn-xs delete" data-id="'+e.id+'" data-toggle="modal" data-target="#myDelModal" title="删除新闻"><span class="glyphicon glyphicon-remove"></span></a>';
 				}else if(e.status=== (-100)){
 					statushtml ='';
 				}else if(e.status=== (-1)){
-					statushtml ='<a href="#" class="btn btn-light-blue pass" data-id="'+e.id+'" title="审核通过">通过</a>'+
-						'		<a href="#" class="btn btn-red delete" data-id="'+e.id+'" data-toggle="modal" data-target="#myDelModal" title="删除新闻">删除</a>';
+					statushtml ='<a href="#" class="btn btn-success btn-xs pass" data-id="'+e.id+'" title="审核通过"><span class="glyphicon glyphicon-ok"></span></a>'+
+						'		<a href="#" class="btn btn-red btn-xs delete" data-id="'+e.id+'" data-toggle="modal" data-target="#myDelModal" title="删除新闻"><span class="glyphicon glyphicon-remove"></span></a>';
 				}
 				var html = '<tr><td class="center">'+e.id+'</td>'+
 						'<td><a href="http://m.jjrb.grsx.cc/'+_src+'.html?id='+e.id+'" target="_blank">'+e.title+'</a></td>'+
 						'<td class="hidden-xs"><a href="http://m.jjrb.grsx.cc/'+_src+'.html?id='+e.owner.id+'" target="_blank">'+e.owner.name+'</a></td>'+
-						'<td class="center"><a href="javascript:;" class="btn btn-primary nvDescp" data-toggle="modal" data-target="#myModal" title="查看详情" data-id="'+e.id+'">详情</a></td>'+
+						'<td class="center"><a href="javascript:;" class="btn btn-primary btn-xs nvDescp" data-toggle="modal" data-target="#myModal" title="查看详情" data-id="'+e.id+'">详情</a></td>'+
 						'<td class="center"><div>'+ statushtml +'</div></td></tr>';
 				switch (status){
 					case "0":
@@ -253,3 +257,167 @@ function newViewpoint(n,type,status){
 		}
 	});
 }
+
+// indicator国家分组
+function indicatorAndCountryGroup(n,type){
+	var _id,all_url,all_data;
+	console.log(type);
+	all_data={
+			page:n,
+			token: localStorage.token
+		};
+	if(type.indexOf("ig")>=0){
+		all_url = _href + interfacelist.group;
+	}else if(type.indexOf("c")>=0){
+		all_url = _href + interfacelist.country;
+	}else if(type.indexOf("i")>=0){
+		all_url = _href + interfacelist.indicator;
+	}
+	// 加载分组
+	$.ajax({
+		type:"get",
+		url: all_url,
+		async:true,
+		data: all_data,
+		success: function(data){
+			$.each(data, function(i,e) {
+				if(type.indexOf("ig")>=0){ //指标分组
+					var html = '<tr><td class="center">'+e.id+'</td>'+
+							'<td><input type="text" name="indicatorName" id="indicatorName" value="'+e.name+'" disabled="disabled" /><a href="javascript:;" class="btn btn-default btn-xs indicator_edit" data-id="'+e.id+'" title="修改名称"><span class="glyphicon glyphicon-edit"></span></a>'+
+							'<span class="edit_name_descp none"><span class="glyphicon glyphicon-ok edit_ok" title="确定修改"></span><span class="glyphicon glyphicon-remove edit_change" title="取消修改"></span></span></td>'+
+							'<td class="hidden-xs"><input type="text" name="indicatorDescpG" id="indicatorDescpG" value="'+e.descp+'" disabled="disabled" /><a href="javascript:;" class="btn btn-default btn-xs indicator_edit" data-id="'+e.id+'" title="修改描述"><span class="glyphicon glyphicon-edit"></span></a>'+
+							'<span class="edit_name_descp none"><span class="glyphicon glyphicon-ok edit_ok" title="确定修改"></span><span class="glyphicon glyphicon-remove edit_change" title="取消修改"></span></span></td>'+
+							'<td><a href="indicator_group_desc.html?id='+e.id+'">'+e.indicators+'</a></td>'+
+							'<td class="hidden-xs">'+e.type+'</td></tr>';
+					$('#indicator_group_datas').append(html);
+				}else if(type.indexOf("i")>=0){ //指标
+					var html = '<tr><td class="center">'+e.pid+'</td>'+
+								'<td><input type="text" name="indicatorEnName" id="indicatorEnName" value="'+e.name_es+'" disabled="disabled" /><a href="javascript:;" class="btn btn-default btn-xs indicator_edit" data-id="'+e.pid+'" title="修改英文名称"><span class="glyphicon glyphicon-edit"></span></a>'+
+								'<span class="edit_name_descp none"><span class="glyphicon glyphicon-ok edit_ok" title="确定修改"></span><span class="glyphicon glyphicon-remove edit_change" title="取消修改"></span></span></td>'+
+								'<td class="hidden-xs"><input type="text" name="indicatorCnName" id="indicatorCnName" value="'+e.name_zh+'" disabled="disabled" /><a href="javascript:;" class="btn btn-default btn-xs indicator_edit" data-id="'+e.pid+'" title="修改中文名称"><span class="glyphicon glyphicon-edit"></span></a>'+
+								'<span class="edit_name_descp none"><span class="glyphicon glyphicon-ok edit_ok" title="确定修改"></span><span class="glyphicon glyphicon-remove edit_change" title="取消修改"></span></span></td>'+
+								'<td class="hidden-xs"><input type="text" name="indicatorDescp" id="indicatorDescp" value="'+e.descp+'" disabled="disabled" /><a href="javascript:;" class="btn btn-default btn-xs indicator_edit" data-id="'+e.pid+'" title="修改描述"><span class="glyphicon glyphicon-edit"></span></a>'+
+								'<span class="edit_name_descp none"><span class="glyphicon glyphicon-ok edit_ok" title="确定修改"></span><span class="glyphicon glyphicon-remove edit_change" title="取消修改"></span></span></td></tr>';
+					$('#indicator_datas').append(html);
+				}else if(type.indexOf("c")>=0){ //国家
+					var html = '<tr><td class="center">'+e.pid+'</td>'+
+								'<td><input type="text" name="countryEnName" id="countryEnName" value="'+e.name_en+'" disabled="disabled" /><a href="javascript:;" class="btn btn-default btn-xs indicator_edit" data-id="'+e.pid+'" title="修改英文名称"><span class="glyphicon glyphicon-edit"></span></a>'+
+								'<span class="edit_name_descp none"><span class="glyphicon glyphicon-ok edit_ok" title="确定修改"></span><span class="glyphicon glyphicon-remove edit_change" title="取消修改"></span></span></td>'+
+								'<td class="hidden-xs"><input type="text" name="countryCnName" id="countryCnName" value="'+e.name_zh+'" disabled="disabled" /><a href="javascript:;" class="btn btn-default btn-xs indicator_edit" data-id="'+e.pid+'" title="修改中文名称"><span class="glyphicon glyphicon-edit"></span></a>'+
+								'<span class="edit_name_descp none"><span class="glyphicon glyphicon-ok edit_ok" title="确定修改"></span><span class="glyphicon glyphicon-remove edit_change" title="取消修改"></span></span></td></tr>';
+					$('#country_datas').append(html);
+				}
+				
+			});
+		},
+		error: function(data){
+			console.log(data);
+		}
+	});
+	
+	
+	// 点击修改，输入框可编辑-显示确定取消按钮
+	$(document).on('click','.indicator_edit',function(){
+		$(this).hide();
+		$(this).next().show();
+		$(this).prev().removeAttr("disabled").focus();
+		_id = $(this).attr("data-id");
+//		console.log($(this).next());
+	});
+	
+	// 确定修改
+	$(document).on('click','.edit_ok',function(){
+		$(this).parent().hide();
+		$(this).parent().prev().show();
+		var $input = $(this).parent().prevAll('input'),data,_url;
+		$input.attr('disabled','disabled');
+		var _idName = $input.attr("id");
+		if (type.indexOf("ig")>=0) {
+			_url = _href + interfacelist.edit_indicator + _id;
+			if (_idName.indexOf('indicatorName')>=0) {
+				data = {
+					token: localStorage.token,
+					name_zh: $input.val()
+				}
+			} else if (_idName.indexOf('indicatorDescpG')>=0){
+				data = {
+					token: localStorage.token,
+					descp: $input.val()
+				}
+			}
+		}else if(type.indexOf("c")>=0){
+			_url = _href + interfacelist.country + _id;
+			if (_idName.indexOf('countryCnName')>=0) {
+				data = {
+					token: localStorage.token,
+					name_zh: $input.val()
+				}
+			} else if (_idName.indexOf('countryEnName')>=0){
+				data = {
+					token: localStorage.token,
+					name_en: $input.val()
+				}
+			}
+		}else if(type.indexOf("i")>=0){
+			_url = _href + interfacelist.indicator + _id;
+			if (_idName.indexOf('indicatorCnName')>=0) {
+				data = {
+					token: localStorage.token,
+					name_zh: $input.val()
+				}
+			} else if (_idName.indexOf('indicatorEnName')>=0){
+				data = {
+					token: localStorage.token,
+					name_es: $input.val()
+				}
+			} else if (_idName.indexOf('indicatorDescp')>=0){
+				data = {
+					token: localStorage.token,
+					descp: $input.val()
+				}
+			}
+		}
+		$.ajax({
+			type:"put",
+			url: _url,
+			async:true,
+			data: data,
+			success: function(data){
+				if(data.code===1 && data.success){
+					alert("修改成功！");
+				}else{
+					alert("修改失败！");
+				}
+				console.log(data);
+			},
+			error: function(data){
+				console.log(data);
+			}
+		});
+	});
+	
+	// 取消
+	$(document).on('click','.edit_change',function(){
+		$(this).parent().hide();
+		$(this).parent().prev().show();
+		$(this).parent().prevAll('input').attr('disabled','disabled');
+	});
+}
+
+
+//获取url中字段
+function getUrlParams() {
+	var params = {};
+	var url = window.location.href;
+	var idx = url.indexOf("?");
+	if(idx > 0) {
+		var queryStr = url.substring(idx + 1);
+		var args = queryStr.split("&");
+		for(var i = 0, a, nv; a = args[i]; i++) {
+			nv = args[i] = a.split("=");
+			params[nv[0]] = nv.length > 1 ? nv[1] : true;
+		}
+	}
+	return params;
+};
+
