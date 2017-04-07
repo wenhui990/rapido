@@ -6,6 +6,7 @@
 <html lang="en">
 	<!--<![endif]-->
 	<!-- start: HEAD -->
+
 	<head>
 		<title>经济日报后台管理系统-指标分组</title>
 		<!-- start: META -->
@@ -45,14 +46,15 @@
 		<link rel="stylesheet" href="assets/css/styles-responsive.css">
 		<link rel="stylesheet" href="assets/css/plugins.css">
 		<link rel="stylesheet" href="assets/css/themes/theme-default.css" type="text/css" id="skin_color">
-		<link rel="stylesheet" href="assets/css/print.css" type="text/css" media="print"/>
+		<link rel="stylesheet" href="assets/css/print.css" type="text/css" media="print" />
 		<!-- end: CORE CSS -->
 		<link rel="shortcut icon" href="favicon.ico" />
-		<link rel="stylesheet" type="text/css" href="assets/css/index.css"/>
-		
+		<link rel="stylesheet" type="text/css" href="assets/css/index.css" />
+
 	</head>
 	<!-- end: HEAD -->
 	<!-- start: BODY -->
+
 	<body>
 		<!-- start: SLIDING BAR (SB) -->
 		<div id="slidingbar-area">
@@ -121,7 +123,7 @@
 						</a>
 						<!-- start: LOGO -->
 						<a class="navbar-brand" href="index.html">
-							<img src="assets/images/logo.png" alt="Rapido"/>
+							<img src="assets/images/logo.png" alt="Rapido" />
 						</a>
 						<!-- end: LOGO -->
 					</div>
@@ -154,7 +156,7 @@
 						</div>
 						<!-- start: MAIN NAVIGATION MENU -->
 						<ul class="main-navigation-menu">
-							
+
 						</ul>
 						<!-- end: MAIN NAVIGATION MENU -->
 					</div>
@@ -234,7 +236,7 @@
 							<div class="col-sm-12">
 								<div class="tabbable table-hover">
 									<div id="add_indicator_group">
-										<a href="javascript:;" class="btn btn-default btn-sm" data-id="" data-toggle="modal" data-target="#myAddModal" title="添加指标分组"><span class="glyphicon glyphicon-plus"></span></a>
+										<a href="#" class="btn btn-default btn-sm" data-toggle="modal" data-target="#myAddModal" id="add_indicator_list" title="添加指标分组"><span class="glyphicon glyphicon-plus"></span></a>
 									</div>
 									<ul class="nav nav-tabs tab-padding tab-space-3 tab-blue" id="myTab4">
 										<li class="active">
@@ -257,7 +259,7 @@
 														<th>操作</th>
 													</tr>
 												</thead>
-												<tbody id="indicator_group_datas">	
+												<tbody id="indicator_group_datas">
 													<tr>
 														<td class="center">21
 														</td>
@@ -266,7 +268,7 @@
 															<a href="javascript:;" class="btn btn-default btn-sm indicator_edit" data-id="'+e.id+'" title="修改名称"><span class="glyphicon glyphicon-edit"></span></a>
 															<span class="edit_name_descp none">
 																<span class="glyphicon glyphicon-ok edit_ok"></span>
-																<span class="glyphicon glyphicon-remove edit_change"></span>
+															<span class="glyphicon glyphicon-remove edit_change"></span>
 															</span>
 														</td>
 														<td class="hidden-xs">
@@ -274,12 +276,16 @@
 															<a href="javascript:;" class="btn btn-default btn-sm indicator_edit" data-id="'+e.id+'" title="修改描述"><span class="glyphicon glyphicon-edit"></span></a>
 															<span class="edit_name_descp none">
 																<span class="glyphicon glyphicon-ok edit_ok"></span>
-																<span class="glyphicon glyphicon-remove edit_change"></span>
+															<span class="glyphicon glyphicon-remove edit_change"></span>
 															</span>
 														</td>
-														<td><a href="indicator_group_desc.html?id=21">指标</a></td>
+														<td>
+															<a href="indicator_group_desc.html?id=21">指标</a>
+														</td>
 														<td class="hidden-xs">类型1</td>
-														<td><a href="javascript:;" class="del_indicator_group" data-toggle="modal" data-target="#myDelModal" data-id="" title="删除分组指标"><span class="glyphicon glyphicon-remove-sign"></span></a></td>
+														<td>
+															<a href="#myDelModal" class="del_indicator_group" data-toggle="modal" data-target="#myDelModal" data-id="" title="删除分组指标"><span class="glyphicon glyphicon-remove-sign"></span></a>
+														</td>
 													</tr>
 												</tbody>
 											</table>
@@ -292,57 +298,98 @@
 					<div class="container" id="pages">
 						<div class="row">
 							<nav aria-label="...">
-							  <ul class="pager">
-							    <li><a href="javascript:;" id="prvePage">上一页</a></li>
-							    <li>
-							    	跳到
-							    	<input type="text" placeholder="输入页数" style="width: 66px;" id="pageVal" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" />页
-							    	<button id="pageOk">确定</button>
-							    </li>
-							    <li><a href="javascript:;" id="nextPage">下一页</a></li>
-							  </ul>
+								<ul class="pager">
+									<li>
+										<a href="javascript:;" id="prvePage">上一页</a>
+									</li>
+									<li>
+										跳到
+										<input type="text" placeholder="输入页数" style="width: 66px;" id="pageVal" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" />页
+										<button id="pageOk">确定</button>
+									</li>
+									<li>
+										<a href="javascript:;" id="nextPage">下一页</a>
+									</li>
+								</ul>
 							</nav>
-						</div>	
+						</div>
 					</div>
 				</div>
 				<!-- end: PAGE -->
 			</div>
+
 			<!-- 删除指标分组弹出模版 -->
-			<div class="modal fade" id="myDelModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-			  <div class="modal-dialog" role="document">
-			    <div class="modal-content">
-			      <div class="modal-header">
-			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-			        <h4 class="modal-title">删除</h4>
-			      </div>
-			      <div class="modal-body">
-			        确定删除吗？
-			      </div>
-			      <div class="modal-footer">
-			        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-			        <button type="button" data-dismiss="modal" class="btn btn-success del_btn">确定</button>
-			      </div>
-			    </div>
-			  </div>
+			<div class="modal fade" id="myDelModal" tabindex="-1" role="dialog">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							<h4 class="modal-title">删除</h4>
+						</div>
+						<div class="modal-body">
+							确定删除吗？
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+							<button type="button" data-dismiss="modal" class="btn btn-success del_btn">确定</button>
+						</div>
+					</div>
+				</div>
 			</div>
 			<!-- 添加指标分组弹出模版 -->
-			<div class="modal fade" id="myAddModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-			  <div class="modal-dialog" role="document" style="width: 80%;">
-			    <div class="modal-content">
-			      <div class="modal-header">
-			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-			        <h4 class="modal-title">添加指标分组</h4>
-			      </div>
-			      <div class="modal-body">
-			        指标ID:<input type="text" name="" id="" value="" />
-			      </div>
-			      <div class="modal-footer">
-			        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-			        <button type="button" class="btn btn-success add_btn">确定</button>
-			      </div>
-			    </div>
-			  </div>
+			<div class="modal" id="myAddModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							<h4 class="modal-title">新建分组</h4>
+						</div>
+						<div class="modal-body">
+							<form class="form-horizontal">
+								<div class="form-group">
+									<label for="inputName" class="col-sm-2 control-label">名字：</label>
+									<div class="col-sm-10">
+										<input type="text" class="form-control" id="inputName" placeholder="请输入名字">
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="inputDescp" class="col-sm-2 control-label">描述：</label>
+									<div class="col-sm-10">
+										<input type="text" class="form-control" id="inputDescp" placeholder="请输入描述">
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="inputPassword3" class="col-sm-2 control-label">类型：</label>
+									<div class="col-sm-10">
+										<select id="selectType">
+											<option value="1">分类分组</option>
+											<option value="2">自定义分组</option>
+											<option value="3">导航分组</option>
+											<option value="4">国家统计局</option>
+										</select>
+									</div>
+
+								</div>
+								<div class="form-group">
+									<label for="inputParent" class="col-sm-2 control-label">父节点id：</label>
+									<div class="col-sm-10">
+										<input type="text" class="form-control" id="inputParent" placeholder="请输入父节点id">
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="col-sm-offset-2 col-sm-10">
+										<a href="javascript:void(0);" class="btn btn-default caretGroup">新建</a>
+									</div>
+								</div>
+							</form>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+						</div>
+					</div>
+				</div>
 			</div>
+
 			<!-- end: MAIN CONTAINER -->
 			<!-- start: FOOTER -->
 			<footer class="inner">
@@ -357,8 +404,9 @@
 			</footer>
 			<!-- end: FOOTER -->
 			<!-- start: SUBVIEW SAMPLE CONTENTS -->
-			
-		</div>	
+
+		</div>
+
 		<!-- start: MAIN JAVASCRIPTS -->
 		<!--[if lt IE 9]>
 		<script src="assets/plugins/respond.min.js"></script>
@@ -371,7 +419,7 @@
 		<script type="text/javascript">
 			$(".main-navigation-menu").load("left_nav.html");
 		</script>
-		<script src="assets/plugins/jquery-ui/jquery-ui-1.10.2.custom.min.js"></script>
+		<!--<script src="assets/plugins/jquery-ui/jquery-ui-1.10.2.custom.min.js"></script>-->
 		<script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
 		<script src="assets/plugins/blockUI/jquery.blockUI.js"></script>
 		<script src="assets/plugins/iCheck/jquery.icheck.min.js"></script>
@@ -383,8 +431,8 @@
 		<script src="assets/plugins/ScrollToFixed/jquery-scrolltofixed-min.js"></script>
 		<script src="assets/plugins/jquery.appear/jquery.appear.js"></script>
 		<script src="assets/plugins/jquery-cookie/jquery.cookie.js"></script>
-		<script src="assets/plugins/velocity/jquery.velocity.min.js"></script>
-		<script src="assets/plugins/TouchSwipe/jquery.touchSwipe.min.js"></script>
+		<!--<script src="assets/plugins/velocity/jquery.velocity.min.js"></script>-->
+		<!--<script src="assets/plugins/TouchSwipe/jquery.touchSwipe.min.js"></script>-->
 		<!-- end: MAIN JAVASCRIPTS -->
 		<!-- start: JAVASCRIPTS REQUIRED FOR SUBVIEW CONTENTS -->
 		<!--<script src="assets/plugins/owl-carousel/owl-carousel/owl.carousel.js"></script>
@@ -415,68 +463,95 @@
 		<!-- start: CORE JAVASCRIPTS  -->
 		<script src="assets/js/main.js"></script>
 		<!-- end: CORE JAVASCRIPTS  -->
+		<!-- 自定义的 javascript -->
 		<script src="assets/js/public.js" type="text/javascript" charset="utf-8"></script>
 		<script>
 			jQuery(document).ready(function() {
 				Main.init();
-//				SVExamples.init();
+				//				SVExamples.init();
 				UIElements.init();
-				
+
 				//加载分组列表
-				indicatorAndCountryGroup(n,"ig");
-				
-				
-				$(document).on('click','.add_btn',function(){
-					var groupId = 
+				indicatorAndCountryGroup(n, "ig");
+
+				//				$(document).on('click','.add_btn',function(){
+				//					var groupId = '';
+				//					$.ajax({
+				//						type:"post",
+				//						url: _href + '/data2/group/'+groupId+'/indicator',
+				//						async:true,
+				//						data: {
+				//							token: localStorage.token
+				//						},
+				//						success: function(data){
+				//							
+				//						}
+				//					});
+				//				});
+				//				
+
+				// 删除分组
+				$(document).on("click", ".del_indicator_group", function() {
+					var _id = $(this).attr("data-id");
+					var _this = $(this);
+					var type = "delete",
+						_url = _href + interfacelist.group;
+					$(document).on('click', '.del_btn', function() {
+						manageNV(type, _url);
+						_this.parents('tr').remove();
+					});
+				});
+				// 创建分组
+				$(document).on("click", ".caretGroup", function(e) {
+					e.stopPropagation();
+					var data = {
+						name: $('#inputName').val(),
+						descp: $('#inputDescp').val(),
+						type: $("#selectType").val(),
+						parent: $('#inputParent').val(),
+						token: localStorage.token
+					}
+					console.log(data);
 					$.ajax({
 						type:"post",
-						url: _href + '/data2/group/'+groupId+'/indicator',
+						url: _href + interfacelist.group ,
 						async:true,
+						data: data,
 						success: function(data){
-							
+							console.log(data);
+						},
+						error: function(data){
+							console.log(data);
 						}
 					});
 				});
-				
-				$(document).on('click','.add_btn',function(){
-					var groupId = 
-					$.ajax({
-						type:"delete",
-						url: _href + '/data2/group/'+groupId+'/indicator',
-						async:true,
-						success: function(data){
-							
-						}
-					});
-				});
-				
+
 				// 点击上一页下一页
-				$(document).on("click","#prvePage,#nextPage",function(){
+				$(document).on("click", "#prvePage,#nextPage", function() {
 					$("#projects").find("tbody").html('');
 					var cv = $(this).attr("id");
-					cv === 'prvePage'?n--:n++;
-					if (n<1) n=1;
+					cv === 'prvePage' ? n-- : n++;
+					if(n < 1) n = 1;
 					loadUsers(n);
 				});
-				
+
 				// 点击确定跳转页面
-				$(document).on("click","#pageOk",function(){
+				$(document).on("click", "#pageOk", function() {
 					$("#projects").find("tbody").html('');
 					var pageVal = $("#pageVal").val();
-					if(pageVal.length<0) {
+					if(pageVal.length < 0) {
 						alert("请输入要跳到的页数");
 						$("#pageVal").focus();
 					}
-					if (pageVal < 1) {
+					if(pageVal < 1) {
 						$("#pageVal").val(1);
 					}
 					loadUsers(pageVal);
 				});
-				
-				
-				
+
 			});
 		</script>
 	</body>
 	<!-- end: BODY -->
+
 </html>

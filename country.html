@@ -236,7 +236,7 @@
 									<ul class="nav nav-tabs tab-padding tab-space-3 tab-blue" id="myTab4">
 										<li class="active">
 											<a data-toggle="tab" href="#panel_overview">
-												指标详细列表
+												国家列表
 											</a>
 										</li>
 									</ul>
@@ -376,8 +376,6 @@
 				
 				indicatorAndCountryGroup(n,"c");
 				
-				//加载分组列表
-				/*indicatorGroup();
 				
 				
 				
@@ -388,7 +386,7 @@
 					var cv = $(this).attr("id");
 					cv === 'prvePage'?n--:n++;
 					if (n<1) n=1;
-					loadUsers(n);
+					indicatorAndCountryGroup(n,"c");
 				});
 				
 				// 点击确定跳转页面
@@ -402,8 +400,9 @@
 					if (pageVal < 1) {
 						$("#pageVal").val(1);
 					}
-					loadUsers(pageVal);
-				});*/
+					indicatorAndCountryGroup(pageVal,"c");
+					n = pageVal;
+				});
 				
 				
 				

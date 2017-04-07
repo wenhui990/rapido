@@ -7,7 +7,7 @@
 	<!--<![endif]-->
 	<!-- start: HEAD -->
 	<head>
-		<title>经济日报后台管理系统-指标分组</title>
+		<title>经济日报后台管理系统-指标</title>
 		<!-- start: META -->
 		<meta charset="utf-8" />
 		<!--[if IE]><meta http-equiv='X-UA-Compatible' content="IE=edge,IE=9,IE=8,chrome=1" /><![endif]-->
@@ -236,7 +236,7 @@
 									<ul class="nav nav-tabs tab-padding tab-space-3 tab-blue" id="myTab4">
 										<li class="active">
 											<a data-toggle="tab" href="#panel_overview">
-												指标分组
+												指标列表
 											</a>
 										</li>
 									</ul>
@@ -392,7 +392,7 @@
 					var cv = $(this).attr("id");
 					cv === 'prvePage'?n--:n++;
 					if (n<1) n=1;
-					loadUsers(n);
+					indicatorAndCountryGroup(n,"i");
 				});
 				
 				// 点击确定跳转页面
@@ -406,7 +406,8 @@
 					if (pageVal < 1) {
 						$("#pageVal").val(1);
 					}
-					loadUsers(pageVal);
+					indicatorAndCountryGroup(pageVal,"i");
+					n = pageVal;
 				});
 				
 				

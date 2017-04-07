@@ -233,6 +233,9 @@
 						<div class="row">
 							<div class="col-sm-12">
 								<div class="tabbable">
+									<div id="add_indicator_group">
+										<a href="#" class="btn btn-default btn-sm" data-toggle="modal" data-target="#myAddModal" id="add_indicator_list" title="添加指标分组"><span class="glyphicon glyphicon-plus"></span></a>
+									</div>
 									<ul class="nav nav-tabs tab-padding tab-space-3 tab-blue" id="myTab4">
 										<li class="active">
 											<a data-toggle="tab" href="#panel_overview">
@@ -251,6 +254,7 @@
 														<th class="hidden-xs">英文名</th>
 														<th>中文名</th>
 														<th class="hidden-xs">父指标</th>
+														<th>操作</th>
 													</tr>
 												</thead>
 												<tbody id="indicator_datas_descp">	
@@ -277,7 +281,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="container" id="pages">
+					<!--<div class="container" id="pages">
 						<div class="row">
 							<nav aria-label="...">
 							  <ul class="pager">
@@ -291,10 +295,62 @@
 							  </ul>
 							</nav>
 						</div>	
-					</div>
+					</div>-->
 				</div>
 				<!-- end: PAGE -->
 			</div>
+			
+			<!-- 删除分组弹出模版 -->
+			<div class="modal fade" id="myDelModal" tabindex="-1" role="dialog">
+			  <div class="modal-dialog" role="document">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			        <h4 class="modal-title">删除</h4>
+			      </div>
+			      <div class="modal-body">
+			        确定删除吗？
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			        <button type="button" data-dismiss="modal" class="btn btn-success del_btn">确定</button>
+			      </div>
+			    </div>
+			  </div>
+			</div>
+			<!-- 新增分组弹出模版 -->
+			<div class="modal" id="myAddModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+			  <div class="modal-dialog" role="document" style="width: 90%;">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			        <h4 class="modal-title">添加指标分组</h4>
+			      </div>
+			      <div class="modal-body">
+			      	<div id="all_indicator"></div>
+			      	<div class="container" id="pages1">
+						<div class="row">
+							<nav aria-label="...">
+							  <ul class="pager">
+							    <li><a href="javascript:;" id="prvePage1">上一页</a></li>
+							    <li>
+							    	跳到
+							    	<input type="text" placeholder="输入页数" style="width: 66px;" id="pageVal1" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" />页
+							    	<button id="pageOk1">确定</button>
+							    </li>
+							    <li><a href="javascript:;" id="nextPage1">下一页</a></li>
+							  </ul>
+							</nav>
+						</div>	
+					</div>  
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+			      </div>
+			    </div>
+			  </div>
+			</div>
+			
 			<!-- end: MAIN CONTAINER -->
 			<!-- start: FOOTER -->
 			<footer class="inner">
@@ -376,21 +432,25 @@
 				
 				var id = getUrlParams().id;
 				
+				// 加载分组详细信息
 				indicatorGroupDescp(n);
 				function indicatorGroupDescp(){
 					$.ajax({
 						type: "get",
-						url: "http://api.jjrb.grsx.cc/data/group/20",//_href + interfacelist.group + 20,
+						url: _href + interfacelist.group + id,//"http://api.jjrb.grsx.cc/data/group/20",
 						async:true,
 						success: function(data){
-							$.each(data.indicators, function(i,e) {
-								var html = '<tr><td class="center">'+e.pid+'</td>'+
-										'<td>'+e.id+'</td>'+
-										'<td class="hidden-xs">'+e.name+'</td>'+
-										'<td>'+e.name_cn+'</td>'+
-										'<td class="hidden-xs">'+data.id+"："+data.name+'</td></tr>';
-								$('#indicator_datas_descp').append(html);
-							});
+							if(data.indicators){
+								$.each(data.indicators, function(i,e) {
+									var html = '<tr><td class="center">'+e.pid+'</td>'+
+											'<td>'+e.id+'</td>'+
+											'<td class="hidden-xs">'+e.name+'</td>'+
+											'<td>'+e.name_cn+'</td>'+
+											'<td class="hidden-xs">'+data.id+"："+data.name+'</td>'+
+											'<td class="hidden-xs"><a href="#myDelModal" class="del_indicator_group" data-toggle="modal" data-target="#myDelModal" data-id="" title="删除分组指标"><span class="glyphicon glyphicon-remove-sign"></span></a></td></tr>';
+									$('#indicator_datas_descp').prepend(html);
+								});
+							}
 						},
 						error: function(err){
 							console.log(err);
@@ -398,8 +458,48 @@
 					});
 				}
 				
-				//加载分组列表
-				/*indicatorGroup();
+				// 获取全部指标
+				$(document).on('click','#add_indicator_list',function(){
+					n=1;
+					allIndicator(n);
+				});
+				
+				function allIndicator(n){
+					$.ajax({
+						type:"get",
+						url: _href + interfacelist.indicator,
+						async:true,
+						data: {
+							page: n,
+							limit: 50,
+							token: localStorage.token
+						},
+						success: function(data){
+							$.each(data, function(i,e) {
+								var html = '<a href="#" class="btn btn-default addToIndi" title="'+e.id+'" data-id="'+e.pid+'">'+e.name_zh+'</a>';
+								$("#all_indicator").append(html);
+							});
+						}
+					});
+				}
+				
+				// 点击指标添加到分组里
+				$(document).on('click','.addToIndi',function(){
+					var groupId = getUrlParams().id;
+					$.ajax({
+						type:"post",
+						url: _href + '/data2/group/'+groupId+'/indicator',
+						async:true,
+						data:{
+							token: localStorage.token,
+							indicator_id: $(this).attr('data-id')
+						},
+						success: function(data){
+							alert("添加成功！");
+//							window.location.reload()
+						}
+					});
+				});
 				
 				
 				
@@ -410,9 +510,9 @@
 					var cv = $(this).attr("id");
 					cv === 'prvePage'?n--:n++;
 					if (n<1) n=1;
-					loadUsers(n);
+					indicatorGroupDescp(n);
+					allIndicator(n);
 				});
-				
 				// 点击确定跳转页面
 				$(document).on("click","#pageOk",function(){
 					$("#projects").find("tbody").html('');
@@ -424,10 +524,33 @@
 					if (pageVal < 1) {
 						$("#pageVal").val(1);
 					}
-					loadUsers(pageVal);
-				});*/
+					indicatorGroupDescp(pageVal);
+					allIndicator(pageVal);
+					n = pageVal;
+				});
 				
-				
+				// 点击添加里的上一页下一页
+				$(document).on("click","#prvePage1,#nextPage1",function(){
+					$("#all_indicator").html('');
+					var cv = $(this).attr("id");
+					cv === 'prvePage'?n--:n++;
+					if (n<1) n=1;
+					allIndicator(n);
+				});
+				// 点击添加里的确定跳转页面
+				$(document).on("click","#pageOk1",function(){
+					$("#all_indicator").html('');
+					var pageVal = $("#pageVal").val();
+					if(pageVal.length<0) {
+						alert("请输入要跳到的页数");
+						$("#pageVal").focus();
+					}
+					if (pageVal < 1) {
+						$("#pageVal").val(1);
+					}
+					allIndicator(pageVal);
+					n = pageVal;
+				});
 				
 			});
 		</script>

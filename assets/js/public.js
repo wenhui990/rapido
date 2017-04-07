@@ -288,11 +288,12 @@ function indicatorAndCountryGroup(n,type){
 							'<td class="hidden-xs"><input type="text" name="indicatorDescpG" id="indicatorDescpG" value="'+e.descp+'" disabled="disabled" /><a href="javascript:;" class="btn btn-default btn-xs indicator_edit" data-id="'+e.id+'" title="修改描述"><span class="glyphicon glyphicon-edit"></span></a>'+
 							'<span class="edit_name_descp none"><span class="glyphicon glyphicon-ok edit_ok" title="确定修改"></span><span class="glyphicon glyphicon-remove edit_change" title="取消修改"></span></span></td>'+
 							'<td><a href="indicator_group_desc.html?id='+e.id+'">'+e.indicators+'</a></td>'+
-							'<td class="hidden-xs">'+e.type+'</td></tr>';
+							'<td class="hidden-xs">'+e.type+'</td>'+
+							'<td class="hidden-xs"><a href="#myDelModal" class="del_indicator_group" data-toggle="modal" data-target="#myDelModal" data-id="" title="删除分组指标"><span class="glyphicon glyphicon-remove-sign"></span></a></td></tr>';
 					$('#indicator_group_datas').append(html);
 				}else if(type.indexOf("i")>=0){ //指标
 					var html = '<tr><td class="center">'+e.pid+'</td>'+
-								'<td><input type="text" name="indicatorEnName" id="indicatorEnName" value="'+e.name_es+'" disabled="disabled" /><a href="javascript:;" class="btn btn-default btn-xs indicator_edit" data-id="'+e.pid+'" title="修改英文名称"><span class="glyphicon glyphicon-edit"></span></a>'+
+								'<td><input type="text" name="indicatorEnName" id="indicatorEnName" value="'+e.name_en+'" disabled="disabled" /><a href="javascript:;" class="btn btn-default btn-xs indicator_edit" data-id="'+e.pid+'" title="修改英文名称"><span class="glyphicon glyphicon-edit"></span></a>'+
 								'<span class="edit_name_descp none"><span class="glyphicon glyphicon-ok edit_ok" title="确定修改"></span><span class="glyphicon glyphicon-remove edit_change" title="取消修改"></span></span></td>'+
 								'<td class="hidden-xs"><input type="text" name="indicatorCnName" id="indicatorCnName" value="'+e.name_zh+'" disabled="disabled" /><a href="javascript:;" class="btn btn-default btn-xs indicator_edit" data-id="'+e.pid+'" title="修改中文名称"><span class="glyphicon glyphicon-edit"></span></a>'+
 								'<span class="edit_name_descp none"><span class="glyphicon glyphicon-ok edit_ok" title="确定修改"></span><span class="glyphicon glyphicon-remove edit_change" title="取消修改"></span></span></td>'+
@@ -337,7 +338,7 @@ function indicatorAndCountryGroup(n,type){
 			if (_idName.indexOf('indicatorName')>=0) {
 				data = {
 					token: localStorage.token,
-					name_zh: $input.val()
+					name: $input.val()
 				}
 			} else if (_idName.indexOf('indicatorDescpG')>=0){
 				data = {
@@ -383,7 +384,7 @@ function indicatorAndCountryGroup(n,type){
 			async:true,
 			data: data,
 			success: function(data){
-				if(data.code===1 && data.success){
+				if(data.code===1){
 					alert("修改成功！");
 				}else{
 					alert("修改失败！");

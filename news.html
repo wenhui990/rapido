@@ -367,8 +367,8 @@
 			  </div>
 			</div>
 			<!-- 删除弹出模版 -->
-			<div class="modal fade" id="myDelModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-			  <div class="modal-dialog" role="document" style="width: 80%;">
+			<div class="modal" id="myDelModal" tabindex="-1" role="dialog">
+			  <div class="modal-dialog" role="document">
 			    <div class="modal-content">
 			      <div class="modal-header">
 			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -492,6 +492,7 @@
 						$("#pageVal").val(1);
 					}
 					newViewpoint(pageVal,type,status);
+					n = pageVal;
 				});
 				
 				// 点击标签切换状态

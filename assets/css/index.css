@@ -70,3 +70,6 @@
 	color: red;
 	font-size: 16px;
 }
+#all_indicator a{
+	margin: 5px 10px;
+}
