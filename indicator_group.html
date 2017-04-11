@@ -254,13 +254,12 @@
 														</th>
 														<th>名称</th>
 														<th class="hidden-xs">详细描述</th>
-														<th>指标</th>
 														<th class="hidden-xs">类型</th>
 														<th>操作</th>
 													</tr>
 												</thead>
 												<tbody id="indicator_group_datas">
-													<tr>
+													<!--<tr>
 														<td class="center">21
 														</td>
 														<td>
@@ -279,14 +278,11 @@
 															<span class="glyphicon glyphicon-remove edit_change"></span>
 															</span>
 														</td>
-														<td>
-															<a href="indicator_group_desc.html?id=21">指标</a>
-														</td>
 														<td class="hidden-xs">类型1</td>
 														<td>
 															<a href="#myDelModal" class="del_indicator_group" data-toggle="modal" data-target="#myDelModal" data-id="" title="删除分组指标"><span class="glyphicon glyphicon-remove-sign"></span></a>
 														</td>
-													</tr>
+													</tr>-->
 												</tbody>
 											</table>
 										</div>
@@ -532,7 +528,7 @@
 					var cv = $(this).attr("id");
 					cv === 'prvePage' ? n-- : n++;
 					if(n < 1) n = 1;
-					loadUsers(n);
+					indicatorAndCountryGroup(n,'ig');
 				});
 
 				// 点击确定跳转页面
@@ -546,7 +542,7 @@
 					if(pageVal < 1) {
 						$("#pageVal").val(1);
 					}
-					loadUsers(pageVal);
+					indicatorAndCountryGroup(pageVal,'ig');
 				});
 
 			});

@@ -7,7 +7,9 @@ var _href = "http://api.jjrb.grsx.cc",//"http://test.api.wantscart.com",
 		group: "/data2/group/",
 		edit_indicator: "/data2/indicator/",  //put + id
 		country: "/data2/country/",
-		indicator: "/data2/indicator/"
+		indicator: "/data2/indicator/",
+		select_indicator: "/data2/indicator/k/", //查询indicator
+		select_country: "/data2/country/k/", //查询国家/data/country/k/{val}
 	},n=1;
 
 
@@ -282,12 +284,11 @@ function indicatorAndCountryGroup(n,type){
 		success: function(data){
 			$.each(data, function(i,e) {
 				if(type.indexOf("ig")>=0){ //指标分组
-					var html = '<tr><td class="center">'+e.id+'</td>'+
+					var html = '<tr><td class="center"><a href="indicator_group_desc.html?id='+e.id+'">'+e.id+'</a></td>'+
 							'<td><input type="text" name="indicatorName" id="indicatorName" value="'+e.name+'" disabled="disabled" /><a href="javascript:;" class="btn btn-default btn-xs indicator_edit" data-id="'+e.id+'" title="修改名称"><span class="glyphicon glyphicon-edit"></span></a>'+
 							'<span class="edit_name_descp none"><span class="glyphicon glyphicon-ok edit_ok" title="确定修改"></span><span class="glyphicon glyphicon-remove edit_change" title="取消修改"></span></span></td>'+
 							'<td class="hidden-xs"><input type="text" name="indicatorDescpG" id="indicatorDescpG" value="'+e.descp+'" disabled="disabled" /><a href="javascript:;" class="btn btn-default btn-xs indicator_edit" data-id="'+e.id+'" title="修改描述"><span class="glyphicon glyphicon-edit"></span></a>'+
 							'<span class="edit_name_descp none"><span class="glyphicon glyphicon-ok edit_ok" title="确定修改"></span><span class="glyphicon glyphicon-remove edit_change" title="取消修改"></span></span></td>'+
-							'<td><a href="indicator_group_desc.html?id='+e.id+'">'+e.indicators+'</a></td>'+
 							'<td class="hidden-xs">'+e.type+'</td>'+
 							'<td class="hidden-xs"><a href="#myDelModal" class="del_indicator_group" data-toggle="modal" data-target="#myDelModal" data-id="" title="删除分组指标"><span class="glyphicon glyphicon-remove-sign"></span></a></td></tr>';
 					$('#indicator_group_datas').append(html);
