@@ -73,3 +73,7 @@
 #all_indicator a{
 	margin: 5px 10px;
 }
+
+.status_txt{
+	color: #FF9800;
+}

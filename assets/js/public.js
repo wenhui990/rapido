@@ -1,3 +1,5 @@
+$('header').load('header.html');
+$('footer').load('footer.html');
 //接口
 var _href = "http://api.jjrb.grsx.cc",//"http://test.api.wantscart.com",
 	interfacelist = {
@@ -16,6 +18,7 @@ var _href = "http://api.jjrb.grsx.cc",//"http://test.api.wantscart.com",
 // 点击左侧导航事件
 $(document).on('click',".navlist_a",function(){
 	console.log($(this).attr("href"));
+	$('.toolbar page-header h1').html($(this).text());
 	window.location.href = $(this).attr("href");
 });
 
@@ -81,6 +84,8 @@ $(document).on("click",".pass",function(){
 	var type = "post",
 		_url = _href + interfacelist.feed + _id + "/pass";
 	manageNV(type,_url);
+	alert('审核成功');
+	window.location.reload();
 });
 
 // 点击不通过
@@ -89,6 +94,7 @@ $(document).on("click",".nopass",function(){
 	var type = "post",
 		_url = _href + interfacelist.feed + _id + "/nopass";
 	manageNV(type,_url);
+	alert('审核成功');
 });
 
 // 点击删除
@@ -120,6 +126,7 @@ function manageNV(type,_url){
 				console.log("其他"+data);
 				$("#modalHtml").append(data);
 			}
+			
 		}
 	});
 }
@@ -220,23 +227,28 @@ function newViewpoint(n,type,status){
 		success: function(data){
 //			console.log(data);
 			$.each(data, function(i,e) {
-				var statushtml;
+				var statushtml,now_status;
 				if (e.status===0) {
 					statushtml ='<a href="#" class="btn btn-success btn-xs pass" data-id="'+e.id+'" title="审核通过"><span class="glyphicon glyphicon-ok"></span></a>'+
 						'		<a href="#" class="btn btn-light-blue btn-xs nopass" data-id="'+e.id+'" title="不通过"><span class="glyphicon glyphicon-ban-circle"></span></a>'+
 						'		<a href="#" class="btn btn-red btn-xs delete" data-id="'+e.id+'" data-toggle="modal" data-target="#myDelModal" title="删除新闻"><span class="glyphicon glyphicon-remove"></span></a>';
+						now_status = '<span class="status_txt">待审核</span>';
 				} else if(e.status===1){
 					statushtml ='<a href="#" class="btn btn-red btn-xs delete" data-id="'+e.id+'" data-toggle="modal" data-target="#myDelModal" title="删除新闻"><span class="glyphicon glyphicon-remove"></span></a>';
+					now_status = '已审核';
 				}else if(e.status=== (-100)){
 					statushtml ='';
+					now_status = '已删除';
 				}else if(e.status=== (-1)){
 					statushtml ='<a href="#" class="btn btn-success btn-xs pass" data-id="'+e.id+'" title="审核通过"><span class="glyphicon glyphicon-ok"></span></a>'+
 						'		<a href="#" class="btn btn-red btn-xs delete" data-id="'+e.id+'" data-toggle="modal" data-target="#myDelModal" title="删除新闻"><span class="glyphicon glyphicon-remove"></span></a>';
+					now_status = '未通过';
 				}
 				var html = '<tr><td class="center">'+e.id+'</td>'+
 						'<td><a href="http://m.jjrb.grsx.cc/'+_src+'.html?id='+e.id+'" target="_blank">'+e.title+'</a></td>'+
 						'<td class="hidden-xs"><a href="http://m.jjrb.grsx.cc/'+_src+'.html?id='+e.owner.id+'" target="_blank">'+e.owner.name+'</a></td>'+
 						'<td class="center"><a href="javascript:;" class="btn btn-primary btn-xs nvDescp" data-toggle="modal" data-target="#myModal" title="查看详情" data-id="'+e.id+'">详情</a></td>'+
+						'<td>'+now_status+'</td>'+
 						'<td class="center"><div>'+ statushtml +'</div></td></tr>';
 				switch (status){
 					case "0":
