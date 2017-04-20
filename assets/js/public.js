@@ -7,7 +7,7 @@ var _href = "http://api.jjrb.grsx.cc",//"http://test.api.wantscart.com",
 		role: "/user/role",
 		feed: "/feed/",
 		group: "/data2/group/",
-		edit_indicator: "/data2/indicator/",  //put + id
+//		edit_indicator: "/data2/indicator/",  //put + id
 		country: "/data2/country/",
 		indicator: "/data2/indicator/",
 		select_indicator: "/data2/indicator/k/", //查询indicator
@@ -113,11 +113,8 @@ $(document).on("click",".delete",function(){
 function manageNV(type,_url){
 	$.ajax({
 		type: type,
-		url: _url,
+		url: _url+'?token='+localStorage.token,
 		async:true,
-		data:{
-			token: localStorage.token
-		},
 		success: function(data){
 			if (type==='delete') {
 				console.log("delete"+data);
@@ -126,7 +123,7 @@ function manageNV(type,_url){
 				console.log("其他"+data);
 				$("#modalHtml").append(data);
 			}
-			
+			window.location.reload();
 		}
 	});
 }
@@ -146,17 +143,7 @@ function loadUsers(n){
 		success: function(data){
 			$.each(data,function(i,e){
 				var html;
-				if(e.role===1){
-					html = '<tr><td class="center">'+e.id+'</td>'+
-							'<td><img src="'+e.head+'" width="100" height="100" alt="用户头像" /></td>'+
-							'<td class="hidden-xs">'+e.name+'</td>'+
-							'<td>'+e.sign+'</td>'+
-							'<td class="center"style="min-width:120px">'+
-							'	<select class="form-control roles">'+
-							'	    <option value=9><a href="#" name="a-role" val="9"><i class="fa fa-user-md"></i>管理员 </a></option>'+
-							'	    <option value=0><a href="#" name="a-role" val="0"><i class="fa fa-user"></i>普通用户</a></option>'+
-							'	    <option value=1 selected><a href="#" name="a-role" val="1"><i class="fa fa-film"></i>专家</a></option></select></td></tr>';
-				}else if(e.role===0){
+				if(e.role===0){
 					html = '<tr><td class="center">'+e.id+'</td>'+
 							'<td><img src="'+e.head+'" width="100" height="100" alt="用户头像" /></td>'+
 							'<td class="hidden-xs">'+e.name+'</td>'+
@@ -166,6 +153,16 @@ function loadUsers(n){
 							'	    <option value=9><a href="#" name="a-role" val="9"><i class="fa fa-user-md"></i>管理员 </a></option>'+
 							'	    <option value=0 selected><a href="#" name="a-role" val="0"><i class="fa fa-user"></i>普通用户</a></option>'+
 							'	    <option value=1><a href="#" name="a-role" val="1"><i class="fa fa-film"></i>专家</a></option></select></td></tr>';
+				}else if(e.role===1||e.role===2){
+					html = '<tr><td class="center">'+e.id+'</td>'+
+							'<td><img src="'+e.head+'" width="100" height="100" alt="用户头像" /></td>'+
+							'<td class="hidden-xs">'+e.name+'</td>'+
+							'<td>'+e.sign+'</td>'+
+							'<td class="center"style="min-width:120px">'+
+							'	<select class="form-control roles">'+
+							'	    <option value=9><a href="#" name="a-role" val="9"><i class="fa fa-user-md"></i>管理员 </a></option>'+
+							'	    <option value=0><a href="#" name="a-role" val="0"><i class="fa fa-user"></i>普通用户</a></option>'+
+							'	    <option value=1 selected><a href="#" name="a-role" val="1"><i class="fa fa-film"></i>专家</a></option></select></td></tr>';
 				}else if(e.role===9){
 					html = '<tr><td class="center">'+e.id+'</td>'+
 							'<td><img src="'+e.head+'" width="100" height="100" alt="用户头像" /></td>'+
@@ -207,7 +204,7 @@ function editRole(_id,roleVal){
 
 // 新闻观点列表
 function newViewpoint(n,type,status){
-	var _src;
+	var _src,_src_user="my_viewpoint";
 //	console.log(typeof(type))
 	if (type==3) {
 		_src = "viewpoint_desc";
@@ -246,7 +243,7 @@ function newViewpoint(n,type,status){
 				}
 				var html = '<tr><td class="center">'+e.id+'</td>'+
 						'<td><a href="http://m.jjrb.grsx.cc/'+_src+'.html?id='+e.id+'" target="_blank">'+e.title+'</a></td>'+
-						'<td class="hidden-xs"><a href="http://m.jjrb.grsx.cc/'+_src+'.html?id='+e.owner.id+'" target="_blank">'+e.owner.name+'</a></td>'+
+						'<td class="hidden-xs"><a href="http://m.jjrb.grsx.cc/'+_src_user+'.html?id='+e.owner.id+'" target="_blank">'+e.owner.name+'</a></td>'+
 						'<td class="center"><a href="javascript:;" class="btn btn-primary btn-xs nvDescp" data-toggle="modal" data-target="#myModal" title="查看详情" data-id="'+e.id+'">详情</a></td>'+
 						'<td>'+now_status+'</td>'+
 						'<td class="center"><div>'+ statushtml +'</div></td></tr>';
@@ -280,11 +277,11 @@ function indicatorAndCountryGroup(n,type){
 			page:n,
 			token: localStorage.token
 		};
-	if(type.indexOf("ig")>=0){
+	if(type.indexOf("group")>=0){
 		all_url = _href + interfacelist.group;
-	}else if(type.indexOf("c")>=0){
+	}else if(type.indexOf("country")>=0){
 		all_url = _href + interfacelist.country;
-	}else if(type.indexOf("i")>=0){
+	}else if(type.indexOf("indicator.html")>=0){
 		all_url = _href + interfacelist.indicator;
 	}
 	// 加载分组
@@ -295,16 +292,31 @@ function indicatorAndCountryGroup(n,type){
 		data: all_data,
 		success: function(data){
 			$.each(data, function(i,e) {
-				if(type.indexOf("ig")>=0){ //指标分组
+				if(type.indexOf("group")>=0){ //指标分组
+					var _type ;
+					switch (e.type){
+						case 1:
+							_type = "分类分组";
+							break;
+						case 2:
+							_type = "自定义";
+							break;
+						case 3:
+							_type = "国际";
+							break;
+						case 4:
+							_type = "国内";
+							break;
+					}
 					var html = '<tr><td class="center"><a href="indicator_group_desc.html?id='+e.id+'">'+e.id+'</a></td>'+
 							'<td><input type="text" name="indicatorName" id="indicatorName" value="'+e.name+'" disabled="disabled" /><a href="javascript:;" class="btn btn-default btn-xs indicator_edit" data-id="'+e.id+'" title="修改名称"><span class="glyphicon glyphicon-edit"></span></a>'+
 							'<span class="edit_name_descp none"><span class="glyphicon glyphicon-ok edit_ok" title="确定修改"></span><span class="glyphicon glyphicon-remove edit_change" title="取消修改"></span></span></td>'+
 							'<td class="hidden-xs"><input type="text" name="indicatorDescpG" id="indicatorDescpG" value="'+e.descp+'" disabled="disabled" /><a href="javascript:;" class="btn btn-default btn-xs indicator_edit" data-id="'+e.id+'" title="修改描述"><span class="glyphicon glyphicon-edit"></span></a>'+
 							'<span class="edit_name_descp none"><span class="glyphicon glyphicon-ok edit_ok" title="确定修改"></span><span class="glyphicon glyphicon-remove edit_change" title="取消修改"></span></span></td>'+
-							'<td class="hidden-xs">'+e.type+'</td>'+
-							'<td class="hidden-xs"><a href="#myDelModal" class="del_indicator_group" data-toggle="modal" data-target="#myDelModal" data-id="" title="删除分组指标"><span class="glyphicon glyphicon-remove-sign"></span></a></td></tr>';
+							'<td class="hidden-xs">'+_type+'</td>'+
+							'<td class="hidden-xs"><a href="#myDelModal" class="del_indicator_group" data-toggle="modal" data-target="#myDelModal" data-id="'+e.id+'" title="删除分组指标"><span class="glyphicon glyphicon-remove-sign"></span></a></td></tr>';
 					$('#indicator_group_datas').append(html);
-				}else if(type.indexOf("i")>=0){ //指标
+				}else if(type.indexOf("indicator.html")>=0){ //指标
 					var html = '<tr><td class="center">'+e.pid+'</td>'+
 								'<td><input type="text" name="indicatorEnName" id="indicatorEnName" value="'+e.name_en+'" disabled="disabled" /><a href="javascript:;" class="btn btn-default btn-xs indicator_edit" data-id="'+e.pid+'" title="修改英文名称"><span class="glyphicon glyphicon-edit"></span></a>'+
 								'<span class="edit_name_descp none"><span class="glyphicon glyphicon-ok edit_ok" title="确定修改"></span><span class="glyphicon glyphicon-remove edit_change" title="取消修改"></span></span></td>'+
@@ -313,7 +325,7 @@ function indicatorAndCountryGroup(n,type){
 								'<td class="hidden-xs"><input type="text" name="indicatorDescp" id="indicatorDescp" value="'+e.descp+'" disabled="disabled" /><a href="javascript:;" class="btn btn-default btn-xs indicator_edit" data-id="'+e.pid+'" title="修改描述"><span class="glyphicon glyphicon-edit"></span></a>'+
 								'<span class="edit_name_descp none"><span class="glyphicon glyphicon-ok edit_ok" title="确定修改"></span><span class="glyphicon glyphicon-remove edit_change" title="取消修改"></span></span></td></tr>';
 					$('#indicator_datas').append(html);
-				}else if(type.indexOf("c")>=0){ //国家
+				}else if(type.indexOf("country")>=0){ //国家
 					var html = '<tr><td class="center">'+e.pid+'</td>'+
 								'<td><input type="text" name="countryEnName" id="countryEnName" value="'+e.name_en+'" disabled="disabled" /><a href="javascript:;" class="btn btn-default btn-xs indicator_edit" data-id="'+e.pid+'" title="修改英文名称"><span class="glyphicon glyphicon-edit"></span></a>'+
 								'<span class="edit_name_descp none"><span class="glyphicon glyphicon-ok edit_ok" title="确定修改"></span><span class="glyphicon glyphicon-remove edit_change" title="取消修改"></span></span></td>'+
@@ -346,8 +358,8 @@ function indicatorAndCountryGroup(n,type){
 		var $input = $(this).parent().prevAll('input'),data,_url;
 		$input.attr('disabled','disabled');
 		var _idName = $input.attr("id");
-		if (type.indexOf("ig")>=0) {
-			_url = _href + interfacelist.edit_indicator + _id;
+		if (type.indexOf("group")>=0) {
+			_url = _href + interfacelist.group + _id;
 			if (_idName.indexOf('indicatorName')>=0) {
 				data = {
 					token: localStorage.token,
@@ -359,7 +371,7 @@ function indicatorAndCountryGroup(n,type){
 					descp: $input.val()
 				}
 			}
-		}else if(type.indexOf("c")>=0){
+		}else if(type.indexOf("country")>=0){
 			_url = _href + interfacelist.country + _id;
 			if (_idName.indexOf('countryCnName')>=0) {
 				data = {
@@ -372,7 +384,7 @@ function indicatorAndCountryGroup(n,type){
 					name_en: $input.val()
 				}
 			}
-		}else if(type.indexOf("i")>=0){
+		}else if(type.indexOf("indicator.html")>=0){
 			_url = _href + interfacelist.indicator + _id;
 			if (_idName.indexOf('indicatorCnName')>=0) {
 				data = {

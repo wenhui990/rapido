@@ -56,62 +56,6 @@
 	<!-- start: BODY -->
 
 	<body>
-		<!-- start: SLIDING BAR (SB) -->
-		<div id="slidingbar-area">
-			<div id="slidingbar">
-				<div class="row">
-					<!-- start: SLIDING BAR SECOND COLUMN -->
-					<div class="col-md-6 col-sm-6">
-						<h2>My Recent Works</h2>
-						<div class="blog-photo-stream margin-bottom-30">
-							<ul class="list-unstyled">
-								<li>
-									<a href="#"><img alt="" src="assets/images/image01_th.jpg"></a>
-								</li>
-								<li>
-									<a href="#"><img alt="" src="assets/images/image02_th.jpg"></a>
-								</li>
-								<li>
-									<a href="#"><img alt="" src="assets/images/image03_th.jpg"></a>
-								</li>
-								<li>
-									<a href="#"><img alt="" src="assets/images/image04_th.jpg"></a>
-								</li>
-							</ul>
-						</div>
-					</div>
-					<!-- end: SLIDING BAR SECOND COLUMN -->
-					<!-- start: SLIDING BAR THIRD COLUMN -->
-					<div class="col-md-6 col-sm-6">
-						<h2>My Info</h2>
-						<address class="margin-bottom-40">
-							Peter Clark
-							<br>
-							12345 Street Name, City Name, United States
-							<br>
-							P: (641)-734-4763
-							<br>
-							Email:
-							<a href="#">
-								peter.clark@example.com
-							</a>
-						</address>
-						<a class="btn btn-transparent-white" href="#">
-							<i class="fa fa-pencil"></i> Edit
-						</a>
-					</div>
-					<!-- end: SLIDING BAR THIRD COLUMN -->
-				</div>
-				<div class="row">
-					<!-- start: SLIDING BAR TOGGLE BUTTON -->
-					<div class="col-md-12 text-center">
-						<a href="#" class="sb_toggle"><i class="fa fa-chevron-up"></i></a>
-					</div>
-					<!-- end: SLIDING BAR TOGGLE BUTTON -->
-				</div>
-			</div>
-		</div>
-		<!-- end: SLIDING BAR -->
 		<div class="main-wrapper">
 			<!-- start: TOPBAR -->
 			<header class="topbar navbar navbar-inverse navbar-fixed-top inner">
@@ -130,7 +74,7 @@
 						</div>
 						<div class="user-profile border-top padding-horizontal-10 block">
 							<div class="inline-block">
-								<img src="assets/images/avatar-1.jpg" alt="">
+								<img src="assets/images/圆角.png" width="50" height="50" alt="">
 							</div>
 							<div class="inline-block">
 								<h5 class="no-margin"> Welcome </h5>
@@ -192,7 +136,7 @@
 														</th>
 														<th>名称</th>
 														<th class="hidden-xs">详细描述</th>
-														<th class="hidden-xs">类型</th>
+														<th class="hidden-xs">分组类型</th>
 														<th>操作</th>
 													</tr>
 												</thead>
@@ -299,7 +243,7 @@
 											<option value="1">分类分组</option>
 											<option value="2">自定义分组</option>
 											<option value="3">国际</option>
-											<option value="4">国内</option>
+											<option selected="selected" value="4">国内</option>
 										</select>
 									</div>
 
@@ -314,6 +258,9 @@
 									<div class="col-sm-offset-2 col-sm-10">
 										<a href="javascript:void(0);" class="btn btn-default caretGroup">新建</a>
 									</div>
+								</div>
+								<div id="infoSucces" class="none">
+									创建成功！
 								</div>
 							</form>
 						</div>
@@ -406,30 +353,15 @@
 				UIElements.init();
 
 				//加载分组列表
-				indicatorAndCountryGroup(n, "ig");
+				indicatorAndCountryGroup(n, "group");
 
-				//				$(document).on('click','.add_btn',function(){
-				//					var groupId = '';
-				//					$.ajax({
-				//						type:"post",
-				//						url: _href + '/data2/group/'+groupId+'/indicator',
-				//						async:true,
-				//						data: {
-				//							token: localStorage.token
-				//						},
-				//						success: function(data){
-				//							
-				//						}
-				//					});
-				//				});
-				//				
 
 				// 删除分组
 				$(document).on("click", ".del_indicator_group", function() {
 					var _id = $(this).attr("data-id");
 					var _this = $(this);
 					var type = "delete",
-						_url = _href + interfacelist.group;
+						_url = _href + interfacelist.group+_id;
 					$(document).on('click', '.del_btn', function() {
 						manageNV(type, _url);
 						_this.parents('tr').remove();
@@ -444,6 +376,10 @@
 						type: $("#selectType").val(),
 						parent: $('#inputParent').val(),
 						token: localStorage.token
+					};
+					if (data.name===''||data.descp==='') {
+						alert('名字、描述和类型不能为空！');
+						return;
 					}
 					console.log(data);
 					$.ajax({
@@ -453,6 +389,12 @@
 						data: data,
 						success: function(data){
 							console.log(data);
+							if(data.id){
+								$('#infoSucces').html("创建成功").css('color','red').show();
+								setTimeout(function(){
+									window.location.reload();
+								},1000);
+							}
 						},
 						error: function(data){
 							console.log(data);
@@ -466,7 +408,7 @@
 					var cv = $(this).attr("id");
 					cv === 'prvePage' ? n-- : n++;
 					if(n < 1) n = 1;
-					indicatorAndCountryGroup(n,'ig');
+					indicatorAndCountryGroup(n,'group');
 				});
 
 				// 点击确定跳转页面
@@ -480,7 +422,7 @@
 					if(pageVal < 1) {
 						$("#pageVal").val(1);
 					}
-					indicatorAndCountryGroup(pageVal,'ig');
+					indicatorAndCountryGroup(pageVal,'group');
 				});
 
 			});

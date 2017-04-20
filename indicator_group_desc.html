@@ -56,62 +56,6 @@
 	<!-- start: BODY -->
 
 	<body>
-		<!-- start: SLIDING BAR (SB) -->
-		<div id="slidingbar-area">
-			<div id="slidingbar">
-				<div class="row">
-					<!-- start: SLIDING BAR SECOND COLUMN -->
-					<div class="col-md-6 col-sm-6">
-						<h2>My Recent Works</h2>
-						<div class="blog-photo-stream margin-bottom-30">
-							<ul class="list-unstyled">
-								<li>
-									<a href="#"><img alt="" src="assets/images/image01_th.jpg"></a>
-								</li>
-								<li>
-									<a href="#"><img alt="" src="assets/images/image02_th.jpg"></a>
-								</li>
-								<li>
-									<a href="#"><img alt="" src="assets/images/image03_th.jpg"></a>
-								</li>
-								<li>
-									<a href="#"><img alt="" src="assets/images/image04_th.jpg"></a>
-								</li>
-							</ul>
-						</div>
-					</div>
-					<!-- end: SLIDING BAR SECOND COLUMN -->
-					<!-- start: SLIDING BAR THIRD COLUMN -->
-					<div class="col-md-6 col-sm-6">
-						<h2>My Info</h2>
-						<address class="margin-bottom-40">
-							Peter Clark
-							<br>
-							12345 Street Name, City Name, United States
-							<br>
-							P: (641)-734-4763
-							<br>
-							Email:
-							<a href="#">
-								peter.clark@example.com
-							</a>
-						</address>
-						<a class="btn btn-transparent-white" href="#">
-							<i class="fa fa-pencil"></i> Edit
-						</a>
-					</div>
-					<!-- end: SLIDING BAR THIRD COLUMN -->
-				</div>
-				<div class="row">
-					<!-- start: SLIDING BAR TOGGLE BUTTON -->
-					<div class="col-md-12 text-center">
-						<a href="#" class="sb_toggle"><i class="fa fa-chevron-up"></i></a>
-					</div>
-					<!-- end: SLIDING BAR TOGGLE BUTTON -->
-				</div>
-			</div>
-		</div>
-		<!-- end: SLIDING BAR -->
 		<div class="main-wrapper">
 			<!-- start: TOPBAR -->
 			<header class="topbar navbar navbar-inverse navbar-fixed-top inner">
@@ -130,7 +74,7 @@
 						</div>
 						<div class="user-profile border-top padding-horizontal-10 block">
 							<div class="inline-block">
-								<img src="assets/images/avatar-1.jpg" alt="">
+								<img src="assets/images/圆角.png" width="50" height="50" alt="">
 							</div>
 							<div class="inline-block">
 								<h5 class="no-margin"> Welcome </h5>
@@ -198,21 +142,6 @@
 													</tr>
 												</thead>
 												<tbody id="indicator_datas_descp">
-													<!--<tr>
-														<td class="center">
-															13930
-														</td>
-														<td>
-															SP.URB.GROW
-														</td>
-														<td class="hidden-xs">
-															Urban population growth (annual %)
-														</td>
-														<td>
-															城市人口年增长率
-														</td>
-														<td class="hidden-xs">20</td>
-													</tr>-->
 												</tbody>
 											</table>
 										</div>
@@ -263,7 +192,7 @@
 				<div class="modal-dialog" role="document" style="width: 90%;">
 					<div class="modal-content">
 						<div class="modal-header">
-							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							<button type="button" class="close close_ref" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 							<h4 class="modal-title">添加指标分组</h4>
 							<div id="sousuo">
 								数据源：
@@ -307,14 +236,6 @@
 			<!-- end: MAIN CONTAINER -->
 			<!-- start: FOOTER -->
 			<footer class="inner">
-				<div class="footer-inner">
-					<div class="pull-left">
-						2014 &copy; Rapido by cliptheme.
-					</div>
-					<div class="pull-right">
-						<span class="go-top"><i class="fa fa-chevron-up"></i></span>
-					</div>
-				</div>
 			</footer>
 			<!-- end: FOOTER -->
 			<!-- start: SUBVIEW SAMPLE CONTENTS -->
@@ -404,7 +325,7 @@
 										'<td class="hidden-xs">' + name_en + '</td>' +
 										'<td>' + name_zh + '</td>' +
 										'<td class="hidden-xs">' + data.id + "：" + data.name + '</td>' +
-										'<td class="hidden-xs"><a href="#myDelModal" class="del_indicator_group" data-toggle="modal" data-target="#myDelModal" data-id="'+e.pid+'" title="删除分组指标"><span class="glyphicon glyphicon-remove-sign"></span></a></td></tr>';
+										'<td class="hidden-xs"><a href="#myDelModal" class="del_indicator_group" data-toggle="modal" data-target="#myDelModal" data-parent-id = "'+data.id+'" data-id="'+e.pid+'" title="删除分组指标"><span class="glyphicon glyphicon-remove-sign"></span></a></td></tr>';
 									$('#indicator_datas_descp').prepend(html);
 								});
 							}
@@ -551,17 +472,21 @@
 				
 				// 删除指标
 				$(document).on('click','.del_indicator_group',function(){
+					var _pid = $(this).attr('data-parent-id');
 					var _id = $(this).attr('data-id');
 					$(this).parents('tr').remove();
 					$('.del_btn').click(function(){
 						$.ajax({
 							type:"delete",
-							url: _href + '/data2/group/'+_id+'/indicator',
-							data:{
-								token : localStorage.token
-							},
+							url: _href + '/data2/group/'+_pid+'/indicator?token='+localStorage.token+'&indicator_id='+_id,
+//							data:{
+//								token : localStorage.token,
+//								indicator_id: _id
+//							},
 							success: function(data){
-//								alert('');
+								if(data.msg==='success'){
+									alert('删除成功！');
+								}
 							}
 						});
 					});
