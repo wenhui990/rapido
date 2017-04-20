@@ -83,9 +83,11 @@ $(document).on("click",".pass",function(){
 	var _id = $(this).attr("data-id");
 	var type = "post",
 		_url = _href + interfacelist.feed + _id + "/pass";
-	manageNV(type,_url);
-	alert('审核成功');
-	window.location.reload();
+	manageNV(type,_url,'pass');
+	$(this).hide();
+	$(this).next('.nopass').hide();
+	$(this).parent().parent().prev().find('span').text("已审核").css('color','#8b91a0');
+//	window.location.reload();
 });
 
 // 点击不通过
@@ -94,7 +96,8 @@ $(document).on("click",".nopass",function(){
 	var type = "post",
 		_url = _href + interfacelist.feed + _id + "/nopass";
 	manageNV(type,_url);
-	alert('审核成功');
+	$(this).hide();
+	$(this).parent().parent().prev().find('span').text("未通过").css('color','#8b91a0');
 });
 
 // 点击删除
@@ -110,20 +113,32 @@ $(document).on("click",".delete",function(){
 });
 
 // 管理新闻和观点（审核、删除、通过不通过）
-function manageNV(type,_url){
+function manageNV(type,_url,pass){
 	$.ajax({
 		type: type,
 		url: _url+'?token='+localStorage.token,
-		async:true,
+		async:false,
 		success: function(data){
-			if (type==='delete') {
-				console.log("delete"+data);
-			} else{
-				$("#modalHtml").html('');
-				console.log("其他"+data);
-				$("#modalHtml").append(data);
+			if(data.msg==='success'){
+				if (type==='delete') {
+					alert("删除成功！");
+				} else{
+					if(pass){
+						alert('审核成功');
+					}else{
+						alert('审核不通过成功');
+					}
+				}
 			}
-			window.location.reload();
+			if(data.msg!=='success'){
+				alert('修改失败！');
+				return;
+			}
+//			window.location.reload();
+		},
+		error: function(err){
+			alert('网络错误，修改失败！');
+			return false;
 		}
 	});
 }
@@ -263,7 +278,6 @@ function newViewpoint(n,type,status){
 				}
 				
 			});
-			
 						
 		}
 	});
@@ -446,4 +460,12 @@ function getUrlParams() {
 	}
 	return params;
 };
+
+// 返回顶部
+$(document).on('click','.go-top', function(e) {
+	$("html, body").animate({
+		scrollTop: 0
+	}, "slow");
+	e.preventDefault();
+});
 
