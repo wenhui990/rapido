@@ -97,7 +97,7 @@ $(document).on("click",".nopass",function(){
 		_url = _href + interfacelist.feed + _id + "/nopass";
 	manageNV(type,_url);
 	$(this).hide();
-	$(this).parent().parent().prev().find('span').text("未通过").css('color','#8b91a0');
+	$(this).parents('tr').remove();
 });
 
 // 点击删除
@@ -328,6 +328,7 @@ function indicatorAndCountryGroup(n,type){
 							'<td class="hidden-xs"><input type="text" name="indicatorDescpG" id="indicatorDescpG" value="'+e.descp+'" disabled="disabled" /><a href="javascript:;" class="btn btn-default btn-xs indicator_edit" data-id="'+e.id+'" title="修改描述"><span class="glyphicon glyphicon-edit"></span></a>'+
 							'<span class="edit_name_descp none"><span class="glyphicon glyphicon-ok edit_ok" title="确定修改"></span><span class="glyphicon glyphicon-remove edit_change" title="取消修改"></span></span></td>'+
 							'<td class="hidden-xs">'+_type+'</td>'+
+							'<td class="center"><a class="btn btn-default" href="indicator_group_desc.html?id='+e.id+'">配置</a></td>'+
 							'<td class="hidden-xs"><a href="#myDelModal" class="del_indicator_group" data-toggle="modal" data-target="#myDelModal" data-id="'+e.id+'" title="删除分组指标"><span class="glyphicon glyphicon-remove-sign"></span></a></td></tr>';
 					$('#indicator_group_datas').append(html);
 				}else if(type.indexOf("indicator.html")>=0){ //指标
