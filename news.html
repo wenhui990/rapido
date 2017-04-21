@@ -379,12 +379,18 @@
 				});
 				
 				// 点击标签切换状态
-				$("#myTab4").on("click","li",function(){
+				$("#myTab4").on('click','li',function(){
 					n = 1;
 					status =  $(this).attr("data-s");
+					var _id = $(this).find('a').attr("href");
+					$(_id).find('tbody').html('');
 					console.log($(this).attr("data-s"));
+					window.history.pushState({},0,_id); 
 					newViewpoint(n,type,status);
 				});
+				
+				newViewpointTabClick(n,type); // tab标签点击事件
+				
 			});
 		</script>
 	</body>
