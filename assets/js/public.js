@@ -1,5 +1,6 @@
 $('header').load('header.html');
 $('footer').load('footer.html');
+$('#dialogPubic').load('login.html');
 //接口
 var _href = "http://api.jjrb.grsx.cc", //"http://test.api.wantscart.com",
 	interfacelist = {
@@ -12,8 +13,202 @@ var _href = "http://api.jjrb.grsx.cc", //"http://test.api.wantscart.com",
 		indicator: "/data2/indicator/",
 		select_indicator: "/data2/indicator/k/", //查询indicator
 		select_country: "/data2/country/k/", //查询国家/data/country/k/{val}
+		phone_code: "/login", //"/api/login", //手机验证码get?phone=
+		phone_login: "/login", //"/api/login", //手机登录post  phone=&code=
+		wx: "/login/wx",
 	},
 	n = 1;
+
+//点击登录区域阻止冒泡
+$("#phone div.modal-body,#WeChat div.modal-body").on("click", function(e) {
+	e.stopPropagation();
+});
+
+//$("body").click(function() {
+//	$("#phone").hide();
+//	$("#WeChat").hide();
+//	//		$(".collects_title_right").click();
+//	//		$(".dropdown").addClass("open");
+//	$(document.body).css({
+//		"overflow": "auto"
+//	});
+//});
+
+//切换手机微信登陆界面 - 方法1
+function toggle_login(clas, a, b) {
+	$(document).on("click", clas, function(e) {
+		//			e.stopPropagation();
+		//			alert(a+"==="+b);
+		$(document.body).css({
+			"overflow": "hidden"
+		});
+
+		$(a).show();
+		$(b).hide();
+		if(clas == ".login_wechat" || a == "#WeChat") {
+			var obj = new WxLogin({
+				id: "wx",
+				appid: "wx1bbe2aa6dfb5768b",
+
+				redirect_uri: encodeURIComponent(_href + interfacelist.wx),
+				state: Math.ceil(Math.random() * 1000),
+				scope: 'snsapi_login',
+				style: "",
+				href: ""
+			});
+			//				$.ajax({
+			//					type: "post",
+			//					url: _href + interfacelist.wx,
+			//					data: {
+			//						expire_in: 1,
+			//						open_id: 'wx1bbe2aa6dfb5768b',
+			//						token: localStorage.token,
+			//						refresh_token: "343"
+			//					},
+			//					async: true,
+			//					success: function(e) {
+			//						console.log(e);
+			//					}
+			//				});
+			//				$("#wx").find("img").attr("src","");
+		}
+		$("#input_Phone").focus();
+	});
+};
+toggle_login(".login_wechat", "#WeChat", "#phone");
+toggle_login(".login_phone", "#phone", "#WeChat");
+
+$('[data-target="#WeChat"]').click(function() {
+	$("#WeChat").show();
+	$("#phone").hide();
+	//		toggle_login(".login_wechat", "#WeChat", "#phone");
+})
+$('[data-target="#Phone"]').click(function() {
+	$("#WeChat").hide();
+	$("#phone").show();
+	//		toggle_login(".login_phone", "#phone", "#WeChat");
+})
+//点击验证码登录
+$(document).on("click",".phone_code", function() {
+	$("#input_password,.phone_code").hide();
+	$(".fg_hide").show();
+	$(".btn_login").addClass("phone_code_login");
+	$(".btn_login").removeClass("phone_login");
+	$("#input_Phone").focus();
+});
+//获取验证码
+$(document).stop(true, true).on("click","#code_btn",function(e) {
+	var _phone = $("#input_Phone").val();
+	if(_phone.length < 11 || _phone == "" || _phone.length > 11) {
+		$('#dialogPulic').find('.modal-body').text("请输入正确的手机号");
+		$('#dialogPulic').modal('show');
+		return;
+	}
+	console.log(interfacelist)
+	//		return;
+	$("#code_btn1").show();
+	$("#code_btn").hide();
+	code_time();
+	$.ajax({
+		type: "get",
+		url: _href + interfacelist.phone_code,
+		data: {
+			phone: _phone
+		},
+		success: function(e) {
+			$('#dialogPulic').find('.modal-body').text("发送成功");
+			$('#dialogPulic').modal('show');
+		}
+	});
+});
+//点击手机号号登录
+$(document).on("click",".phone_no", function() {
+	$("#input_password,.phone_code").show();
+	$(".fg_hide").hide();
+	$(".btn_login").addClass("phone_login");
+	$(".btn_login").removeClass("phone_code_login");
+	$("#input_Phone").focus();
+});
+//登录
+$(document).on("click",".btn_login",function() {
+
+	var _classname = $(this).attr("class"),
+		_phone = $("#input_Phone").val(),
+		_code;
+	console.log(_classname);
+	if(_classname.indexOf("phone_login") >= 0) {
+		console.log("手机号密码登录");
+		if(forms(true, false)) {
+			forms(true, false);
+		} else {
+			return false;
+		}
+		_code = $("#input_password").val();
+		$.ajax({
+			type: "post",
+			url: _href + interfacelist.phone_login,
+			data: {
+				phone: _phone,
+				code: _code
+			},
+			success: function(e) {
+				$('#dialogPulic').find('.modal-body').text("登录成功");
+				$('#dialogPulic').modal('show');
+				console.log(e);
+				if(data != 'success') {
+					//location.href= data;//"http://wap.wantscart.com/admin/login?from="+location.href;
+				}
+			},
+			error: function(e) {
+				$('#dialogPulic').find('.modal-body').text('登录失败！');
+				$('#dialogPulic').modal('show');
+			}
+		});
+	} else if(_classname.indexOf("phone_code_login") >= 0) {
+		console.log("手机号验证码登录");
+		console.log(!forms(false, true));
+		if(forms(false, true)) {
+			$("#input_Phone_code").focus();
+			return;
+		}
+		_code = $("#input_Phone_code").val();
+		localStorage.phone = _phone;
+		console.log(_code);
+		$.ajax({
+			type: "post",
+			url: _href + interfacelist.phone_login,
+			data: {
+				phone: _phone,
+				code: _code
+			},
+			success: function(e) {
+				console.log(e);
+				if(e.msg == "无效的短信验证码") {
+					$('#dialogPulic').find('.modal-body').text('无效的验证码！');
+				$('#dialogPulic').modal('show');
+					console.log(e.detail + "===");
+					return false;
+				}
+				console.log("登录成功！");
+				localStorage.token = e.token;
+				localStorage.userId = e.user.id;
+				localStorage.userName = e.user.name;
+				localStorage.head = e.user.head;
+				localStorage.role = e.user.role;
+				$("#phone").hide();
+				location.reload();
+			},
+			error: function() {
+				console.log("登陆失败！")
+			}
+		});
+	}
+});
+// 退出登录
+$(document).on('click', '#exit', function() {
+	localStorage.clear();
+	window.location.reload();
+});
 
 // 点击左侧导航事件
 $(document).on('click', ".navlist_a", function() {
@@ -38,19 +233,46 @@ $(document).on("mouseleave", ".lists_c", function() {
 	$(this).css("background", "#22262f");
 	var _navId = sessionStorage.nav_parentId;
 	var _navindex = sessionStorage.nav_index;
-	$('#'+_navId).find('.navlist_a').eq(_navindex).mouseover();
+	$('#' + _navId).find('.navlist_a').eq(_navindex).mouseover();
 });
 
 // 左侧导航刷新后记忆上次选中
-setTimeout(function(){
-	if(sessionStorage.nav_parentId){
+setTimeout(function() {
+	if(sessionStorage.nav_parentId) {
 		var _navId = sessionStorage.nav_parentId;
 		var _navindex = sessionStorage.nav_index;
-		$('#'+_navId).addClass('in').prev().find('span').removeClass('glyphicon-chevron-right').addClass('glyphicon-chevron-down');
-		$('#'+_navId).find('.navlist_a').eq(_navindex).mouseover();
+		$('#' + _navId).addClass('in').prev().find('span').removeClass('glyphicon-chevron-right').addClass('glyphicon-chevron-down');
+		$('#' + _navId).find('.navlist_a').eq(_navindex).mouseover();
 	}
-},600);
+	// 点击其他导航清除记忆
+	$('.leftMenu>li').click(function() {
+		sessionStorage.clear();
+	});
+	// 弹窗高度
+	var dialogHeight = $('#dialogPulic').find('.modal-content').height();
+	var windowHeight = $(window).height();
+	var dialogTop = (windowHeight/2) - 170;
+	$('#dialogPulic').css('top',dialogTop+'px');
+}, 600);
 
+// 弹窗高度
+//var dialogHeight = $('#dialogPulic').find('.modal-content').height();
+//var windowHeight = $(window).height();
+//var dialogTop = (windowHeight/2) - (windowHeight/2);
+//$('#dialogPulic').css('top',dialogTop);
+
+dialogPubic();
+// 公用弹窗
+function dialogPubic() {
+	var dialogHtml = '<div class="modal fade" id="dialogPulic" tabindex="-1" role="dialog">' +
+		'<div class="modal-dialog" role="document">' +
+		'<div class="modal-content">' +
+		'<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">信息</h4></div>' +
+		'	<div class="modal-body">确定删除吗？</div>' +
+		'	<div class="modal-footer"><button type="button" data-dismiss="modal" class="btn btn-success del_btn">确定</button></div>' +
+		'</div></div></div>';
+	$('body').append(dialogHtml);
+}
 
 // 点击详情
 $(document).on('click', '.nvDescp', function() {
@@ -138,23 +360,27 @@ function manageNV(type, _url, pass) {
 		success: function(data) {
 			if(data.msg === 'success') {
 				if(type === 'delete') {
-					alert("删除成功！");
+					$('#dialogPulic').find('.modal-body').text('删除成功！');
+					$('#dialogPulic').modal('show');
 				} else {
 					if(pass) {
-						alert('审核成功');
+						$('#dialogPulic').find('.modal-body').text('审核成功！');
+						$('#dialogPulic').modal('show');
 					} else {
-						alert('审核不通过成功');
+						$('#dialogPulic').find('.modal-body').text('审核不通过成功！');
+						$('#dialogPulic').modal('show');
 					}
 				}
 			}
 			if(data.msg !== 'success') {
-				alert('修改失败！');
+				$('#dialogPulic').find('.modal-body').text('修改失败！');
+				$('#dialogPulic').modal('show');
 				return;
 			}
 			//			window.location.reload();
 		},
 		error: function(err) {
-			alert('网络错误，修改失败！');
+			$('#dialogPulic').modal('show');
 			return false;
 		}
 	});
@@ -171,6 +397,7 @@ function loadUsers(n) {
 			page: n
 		},
 		success: function(data) {
+			$('#loading').hide();
 			$.each(data, function(i, e) {
 				var html;
 				if(e.role === 0) {
@@ -224,11 +451,13 @@ function editRole(_id, roleVal) {
 		},
 		success: function(data) {
 			if(data.code === 1 || data.msg === "success") {
-				alert("修改成功！");
+				$('#dialogPulic').find('.modal-body').text('修改成功！');
+				$('#dialogPulic').modal('show');
 			}
 		},
 		error: function(d) {
-			alert("修改失败！" + d.statusText);
+			$('#dialogPulic').find('.modal-body').text("修改失败！" + d.statusText);
+			$('#dialogPulic').modal('show');
 		}
 	});
 }
@@ -254,6 +483,11 @@ function newViewpoint(n, type, status, id) {
 		},
 		success: function(data) {
 			//			console.log(data);
+			if(!data.length || data==='') {
+				$('.tab-content').find('tbody').html('<td style="text-align:center;padding:10px 0" colspan="5">没有内容！</td>');
+			}
+			$('.loading').hide();
+			
 			$.each(data, function(i, e) {
 				var statushtml, now_status;
 				if(e.status === 0) {
@@ -300,7 +534,7 @@ function newViewpoint(n, type, status, id) {
 }
 
 // 新闻观点tab标签点击事件
-function newViewpointTabClick(n,type) {
+function newViewpointTabClick(n, type) {
 	var _url = window.location.href;
 	var tabId = _url.split('#')[1];
 	$('#' + tabId).addClass('active in').siblings().removeClass('active in');
@@ -346,6 +580,7 @@ function indicatorAndCountryGroup(n, type) {
 		async: true,
 		data: all_data,
 		success: function(data) {
+			$('#loading').hide();
 			$.each(data, function(i, e) {
 				if(type.indexOf("group") >= 0) { //指标分组
 					var _type;
@@ -466,9 +701,11 @@ function indicatorAndCountryGroup(n, type) {
 			data: data,
 			success: function(data) {
 				if(data.code === 1) {
-					alert("修改成功！");
+					$('#dialogPulic').find('.modal-body').text('修改成功！');
+					$('#dialogPulic').modal('show');
 				} else {
-					alert("修改失败！");
+					$('#dialogPulic').find('.modal-body').text('修改失败！');
+					$('#dialogPulic').modal('show');
 				}
 				console.log(data);
 			},
@@ -509,3 +746,64 @@ $(document).on('click', '.go-top', function(e) {
 	}, "slow");
 	e.preventDefault();
 });
+
+//验证码倒计时
+function code_time() {
+	var code_num = 60;
+	var time = setInterval(function() {
+		code_num--;
+		//		console.log(code_num);
+		$("#code_num i").html(code_num);
+		if(code_num <= 0) {
+			code_num = 60;
+			$("#code_num i").html(code_num);
+			clearInterval(time);
+			$("#code_btn1").hide();
+			$("#code_btn").show();
+		}
+	}, 1000);
+}
+//验证表单信息
+function forms(p, c) {
+	var _phone = $("#input_Phone").val(),
+		_password = $("#input_password").val(),
+		_code = $("#input_Phone_code").val();
+	/*if (p) {
+		if (_phone.length=0||_phone=="") {
+			alert("请输入手机号，不能为空！");
+			$("#input_Phone").focus();
+			return false;
+		}
+		if (_phone.length>11||_phone.length<11) {
+			alert("请输入正确的11位手机号！");
+			$("#input_Phone").focus();
+			return false;
+		}
+		if (_password.length=0||_password=="") {
+			alert("请输入密码，密码不能为空！");
+			$("#input_password").focus();
+			return false;
+		}
+	} else */
+	if(c) {
+		if(_phone.length = 0 || _phone == "") {
+			$('#dialogPulic').find('.modal-body').text('请输入手机号，不能为空！');
+			$('#dialogPulic').modal('show');
+			$("#input_Phone").focus();
+			return false;
+		}
+		if(_phone.length > 11 || _phone.length < 11) {
+			$('#dialogPulic').find('.modal-body').text('请输入正确的11位手机号！');
+			$('#dialogPulic').modal('show');
+			$("#input_Phone").focus();
+			return false;
+		}
+		if(_code.length = 0 || _code == "") {
+			$('#dialogPulic').find('.modal-body').text('请输入验证码，不能为空！');
+			$('#dialogPulic').modal('show');
+			$("#input_Phone_code").focus();
+			return false;
+		}
+	}
+
+}

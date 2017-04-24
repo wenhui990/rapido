@@ -77,3 +77,22 @@
 .status_txt{
 	color: #FF9800;
 }
+
+#phone,
+#WeChat,
+#add_tan {
+	position: fixed;
+	top: 0;
+	background: rgba(0, 0, 0, 0.6);
+	width: 100%;
+	min-height: 1100px;
+	width: 100%;
+	z-index: 998;
+	display: none;
+}
+
+#loading{
+	text-align: center;
+    height: 30px;
+    line-height: 30px;
+}
