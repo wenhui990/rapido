@@ -483,10 +483,10 @@ function newViewpoint(n, type, status, id) {
 		},
 		success: function(data) {
 			//			console.log(data);
+			$('.loading').hide();
 			if(!data.length || data==='') {
 				$('.tab-content').find('tbody').html('<td style="text-align:center;padding:10px 0" colspan="5">没有内容！</td>');
 			}
-			$('.loading').hide();
 			
 			$.each(data, function(i, e) {
 				var statushtml, now_status;
