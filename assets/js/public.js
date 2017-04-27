@@ -341,13 +341,16 @@ $(document).on("click", ".nopass", function() {
 
 // 点击删除
 $(document).on("click", ".delete", function() {
+	$('#myDelModal .modal-footer').find('button.btn-success').addClass('del_btn');
 	var _id = $(this).attr("data-id");
 	var _this = $(this);
-	var type = "delete",
+	$('#myDelModal').on('click', 'button.del_btn', function() {
+		console.log(_id);
+		var type = "delete",
 		_url = _href + interfacelist.feed + _id + '?token=' + localStorage.token;
-	$(document).on('click', '.del_btn', function() {
 		manageNV(type, _url);
-		_this.parents('tr').remove();
+		_this.parents('tr').empty();
+		$('.del_btn').removeClass('del_btn');
 	});
 });
 
@@ -362,6 +365,8 @@ function manageNV(type, _url, pass) {
 				if(type === 'delete') {
 					$('#dialogPulic').find('.modal-body').text('删除成功！');
 					$('#dialogPulic').modal('show');
+					$('#myDelModal').off();
+					$('button.del_btn').off();
 				} else {
 					if(pass) {
 						$('#dialogPulic').find('.modal-body').text('审核成功！');
