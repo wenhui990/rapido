@@ -6,6 +6,7 @@ var _href = "http://api.jjrb.grsx.cc", //"http://test.api.wantscart.com",
 	interfacelist = {
 		user_all: "/user/list", //所有用户
 		role: "/user/role",
+		user: "/user/",
 		feed: "/feed/",
 		group: "/data2/group/",
 		//		edit_indicator: "/data2/indicator/",  //put + id
@@ -392,17 +393,38 @@ function manageNV(type, _url, pass) {
 }
 
 // 加载用户列表方法
-function loadUsers(n) {
+function loadUsers(n,role,id,name) {
+	var _url;
+	switch (role){
+		case '0':
+			_url = _href + interfacelist.user_all + '/0';
+			break;
+		case '1':
+			_url = _href + interfacelist.user_all + '/1';
+			break;
+		case '2':
+			_url = _href + interfacelist.user_all + '/2';
+			break;
+		case '9':
+			_url = _href + interfacelist.user_all + '/9';
+			break;
+		case 'w':
+			_url = _href + interfacelist.user_all + '/w/' + name;
+			break;
+		default:
+			_url = _href + interfacelist.user_all;
+			break;
+	}
 	$.ajax({
 		type: "get",
-		url: _href + interfacelist.user_all,
+		url: _url,
 		async: true,
 		data: {
 			token: localStorage.token,
 			page: n
 		},
 		success: function(data) {
-			$('#loading').hide();
+			$('.loading').hide();
 			$.each(data, function(i, e) {
 				var html;
 				if(e.role === 0) {
@@ -414,8 +436,10 @@ function loadUsers(n) {
 						'	<select class="form-control roles">' +
 						'	    <option value=9><a href="#" name="a-role" val="9"><i class="fa fa-user-md"></i>管理员 </a></option>' +
 						'	    <option value=0 selected><a href="#" name="a-role" val="0"><i class="fa fa-user"></i>普通用户</a></option>' +
-						'	    <option value=1><a href="#" name="a-role" val="1"><i class="fa fa-film"></i>专家</a></option></select></td></tr>';
-				} else if(e.role === 1 || e.role === 2) {
+						'	    <option value=1><a href="#" name="a-role" val="1"><i class="fa fa-film"></i>专家</a></option>' +
+						'<option value=2><a href="#" name="a-role" val="2"><i class="fa fa-film"></i>系统账户</a></option></select></td>' +
+						'<td class="edit_role" data-id="'+e.id+'"><button class="btn btn-primary btn-xs">修改</button></td></tr>';
+				} else if(e.role === 1) {
 					html = '<tr><td class="center">' + e.id + '</td>' +
 						'<td><img src="' + e.head + '" width="100" height="100" alt="用户头像" /></td>' +
 						'<td class="hidden-xs">' + e.name + '</td>' +
@@ -424,7 +448,9 @@ function loadUsers(n) {
 						'	<select class="form-control roles">' +
 						'	    <option value=9><a href="#" name="a-role" val="9"><i class="fa fa-user-md"></i>管理员 </a></option>' +
 						'	    <option value=0><a href="#" name="a-role" val="0"><i class="fa fa-user"></i>普通用户</a></option>' +
-						'	    <option value=1 selected><a href="#" name="a-role" val="1"><i class="fa fa-film"></i>专家</a></option></select></td></tr>';
+						'	    <option value=1 selected><a href="#" name="a-role" val="1"><i class="fa fa-film"></i>专家</a></option>' +
+						'<option value=2><a href="#" name="a-role" val="2"><i class="fa fa-film"></i>系统账户</a></option></select></td>' +
+						'<td class="edit_role" data-id="'+e.id+'"><button class="btn btn-primary btn-xs">修改</button></td></tr>';
 				} else if(e.role === 9) {
 					html = '<tr><td class="center">' + e.id + '</td>' +
 						'<td><img src="' + e.head + '" width="100" height="100" alt="用户头像" /></td>' +
@@ -434,29 +460,60 @@ function loadUsers(n) {
 						'	<select class="form-control roles">' +
 						'	    <option value=9 selected><a href="#" name="a-role" val="9"><i class="fa fa-user-md"></i>管理员 </a></option>' +
 						'	    <option value=0><a href="#" name="a-role" val="0"><i class="fa fa-user"></i>普通用户</a></option>' +
-						'	    <option value=1><a href="#" name="a-role" val="1"><i class="fa fa-film"></i>专家</a></option></select></td></tr>';
-					("#role").find("option[value='9']").attr("selected", "selected");
+						'	    <option value=1><a href="#" name="a-role" val="1"><i class="fa fa-film"></i>专家</a></option>' +
+						'<option value=2><a href="#" name="a-role" val="2"><i class="fa fa-film"></i>系统账户</a></option></select></td>' +
+						'<td class="edit_role" data-id="'+e.id+'"><button class="btn btn-primary btn-xs">修改</button></td></tr>';
+					$("#role").find("option[value='9']").attr("selected", "selected");
+				}else if(e.role === 2) {
+					html = '<tr><td class="center">' + e.id + '</td>' +
+						'<td><img src="' + e.head + '" width="100" height="100" alt="用户头像" /></td>' +
+						'<td class="hidden-xs">' + e.name + '</td>' +
+						'<td>' + e.sign + '</td>' +
+						'<td class="center"style="min-width:120px">' +
+						'	<select class="form-control roles">' +
+						'	    <option value="9"><a href="#" name="a-role" val="9"><i class="fa fa-user-md"></i>管理员 </a></option>' +
+						'	    <option value="0"><a href="#" name="a-role" val="0"><i class="fa fa-user"></i>普通用户</a></option>' +
+						'	    <option value="1"><a href="#" name="a-role" val="1"><i class="fa fa-film"></i>专家</a></option>' +
+						'		<option value="2" selected><a href="#" name="a-role" val="2"><i class="fa fa-film"></i>系统账户</a></option></select></td>' +
+						'<td class="edit_role" data-id="'+e.id+'"><button class="btn btn-primary btn-xs">修改</button></td></tr>';
 				}
-				$("#projects").find("tbody").append(html);
+				$(id).find("tbody").append(html);
 			});
 		}
 	});
 };
 
 // 修改用户角色方法
-function editRole(_id, roleVal) {
-	$.ajax({
-		type: "PUT",
-		url: _href + interfacelist.role,
-		async: true,
-		data: {
+function editRole(_id, roleVal,all) {
+	var _url,_data;
+	if(all){
+		_url = _href + interfacelist.user + _id;
+		_data = {
+			name: $('#inputName').val(),
+			gender: $(':radio[name="gender"]:checked').val(),
+			sign: $('#inputSign').val(),
+			intro: $('#inputIntro').val(),
+			token: localStorage.token
+		};
+	}else{
+		_url = _href + interfacelist.role;
+		_data = {
 			id: _id,
 			role: roleVal,
 			token: localStorage.token
-		},
+		}
+	}
+	$.ajax({
+		type: "PUT",
+		url: _url,
+		async: true,
+		data: _data,
 		success: function(data) {
 			if(data.code === 1 || data.msg === "success") {
 				$('#dialogPulic').find('.modal-body').text('修改成功！');
+				$('#dialogPulic').modal('show');
+			}else{
+				$('#dialogPulic').find('.modal-body').text('修改失败！');
 				$('#dialogPulic').modal('show');
 			}
 		},
@@ -466,6 +523,40 @@ function editRole(_id, roleVal) {
 		}
 	});
 }
+
+// 切换用户列表
+function roleTabClick(n) {
+	var _url = window.location.href;
+	var tabId = _url.split('#')[1];
+	$('#' + tabId).addClass('active in').siblings().removeClass('active in');
+	switch(tabId) {
+		case 'panel_common':
+			loadUsers(n, '0',tabId);
+			$("#myTab4").find('li').eq(1).click().addClass('active').siblings().removeClass('active');
+			break;
+		case 'panel_expert':
+			loadUsers(n, '1',tabId);
+			$("#myTab4").find('li').eq(2).click().addClass('active').siblings().removeClass('active');
+			break;
+		case 'panel_admin':
+			loadUsers(n, '9', tabId);
+			$("#myTab4").find('li').eq(3).click().addClass('active').siblings().removeClass('active');
+			break;
+		case 'panel_system':
+			loadUsers(n, '2', tabId);
+			$("#myTab4").find('li').eq(4).click().addClass('active').siblings().removeClass('active');
+			break;
+		case 'panel_search':
+//			loadUsers(n, 'w', tabId);
+			$("#myTab4").find('li').eq(5).click().addClass('active').siblings().removeClass('active');
+			break;
+		default:
+			loadUsers(n, null,tabId);
+			$("#myTab4").find('li').eq(0).click().addClass('active').siblings().removeClass('active');
+			break;
+	}
+}
+
 
 // 新闻观点列表
 function newViewpoint(n, type, status, id) {
