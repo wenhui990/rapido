@@ -73,7 +73,7 @@
 							</a>
 						</div>
 						<div class="user-profile border-top padding-horizontal-10 block">
-							<div class="inline-block">
+							<div class="inline-block" id="role_img">
 								<img src="assets/images/圆角.png" width="50" height="50" alt="">
 							</div>
 							<div class="inline-block">
@@ -93,14 +93,17 @@
 					<!-- end: SIDEBAR -->
 				</div>
 				<div class="slide-tools">
-					<div class="col-xs-6 text-left no-padding">
-						<!--<a class="btn btn-sm status" href="#">
-							Status <i class="fa fa-dot-circle-o text-green"></i> <span>Online</span>
-						</a>-->
+					<div class="col-xs-8 text-left no-padding">
+						<a class="btn btn-sm status login_phone wxPhoneLogin" href="#">
+							手机号登录
+						</a>
+						<a class="btn btn-sm status login_wx wxPhoneLogin" href="#">
+							微信登录
+						</a>
 					</div>
-					<div class="col-xs-6 text-right no-padding">
+					<div class="col-xs-4 text-right no-padding">
 						<a class="btn btn-sm log-out text-right" href="#">
-							<i class="fa fa-power-off"></i> Log Out
+							<i class="fa fa-power-off"></i> 退出
 						</a>
 					</div>
 				</div>
@@ -320,12 +323,12 @@
 										<input type="text" class="form-control" id="inputSign" placeholder="请输入个性签名">
 									</div>
 								</div>
-								<div class="form-group">
+								<!--<div class="form-group">
 									<label for="inputIntro" class="col-sm-2 control-label">自我介绍</label>
 									<div class="col-sm-10">
 										<input type="text" class="form-control" id="inputIntro" placeholder="请输入自我介绍">
 									</div>
-								</div>
+								</div>-->
 								<div class="form-group">
 									<label for="" class="col-sm-2 control-label">性别</label>
 									<div class="col-sm-10">
@@ -338,7 +341,16 @@
 									</div>
 								
 								</div>
-								
+								<div class="form-group">
+									<label for="" class="col-sm-2 control-label">头像</label>
+									<div class="col-sm-10">
+										<input type="file" name="fileImg" id="fileImg" value="" />
+										<div style="margin: 10px 0;">
+											<img src="admin/assets/images/anonymous.jpg" id="imgShow"	 width="100" height="100" alt="此用户没有头像"/>
+										</div>
+									</div>
+									
+								</div>
 							</form>
 						</div>
 						<div class="modal-footer">
@@ -349,6 +361,8 @@
 				</div>
 			</div>
 		</div>
+		<div id="dialogPubic"></div>
+			
 		<!-- start: MAIN JAVASCRIPTS -->
 		<!--[if lt IE 9]>
 		<script src="assets/plugins/respond.min.js"></script>
@@ -405,6 +419,9 @@
 		<!-- start: CORE JAVASCRIPTS  -->
 		<script src="assets/js/main.js"></script>
 		<!-- end: CORE JAVASCRIPTS  -->
+		
+		<script src="http://res.wx.qq.com/connect/zh_CN/htmledition/js/wxLogin.js"></script>
+		<script src="assets/js/jquery.cookie.js" type="text/javascript" charset="utf-8"></script>
 		<script src="assets/js/public.js" type="text/javascript" charset="utf-8"></script>
 		<script>
 			jQuery(document).ready(function() {
@@ -444,23 +461,33 @@
 				
 				// 搜索用户
 				$(document).on('keyup','#search_role',function(e){
+					$('#myTab4').find('li').eq(5).click();
 					var _name = $(this).val();
+					_id = '#panel_search';
 					n=1;
 					roleTabClick();
-					loadUsers(n,'w','#search_role',_name);
+					loadUsers(n,'w',_id,_name);
 					
 				});
 				
 				// 修改用户角色
 				$(document).on("change", ".roles", function() {
 					var role = $(this).val();
-					var _id = $(this).parents("tr").find("td").first().text();
+					var _idEdit = $(this).parents("tr").find("td").first().text();
 					//					console.log(_id);
-					editRole(_id, role);
+					editRole(_idEdit, role);
 				});
 
 				// 更新用户资料
 				$(document).on('click', '.edit_role', function() {
+					var fileId = '#fileImg',imgId = '#imgShow';
+					if(!!window.ActiveXObject || "ActiveXObject" in window){
+						uploadImg(fileId, imgId);
+					}else{
+						$(document).on("change", fileId, function() {
+							uploadImg(fileId, imgId);
+						});
+					}
 					var _id = $(this).attr('data-id');
 					$.ajax({
 						type:"get",
@@ -469,8 +496,8 @@
 						success: function(data){
 							$('#inputName').val(data.name);
 							$('#inputSign').val(data.sign);
-							$('#inputIntro').val(data.user_info);
 							$(':radio[name="gender"][value="'+data.gender+'"]').attr('checked','true');
+							$(imgId).attr('src',data.head);
 						}
 					});
 					$('#dialogRole').modal('show');

@@ -91,8 +91,30 @@
 	display: none;
 }
 
-#loading{
+.loading{
 	text-align: center;
     height: 30px;
     line-height: 30px;
+}
+
+.login_wx{
+	padding-left: 0;
+}
+
+.modal_style{
+	width: 340px;
+	top: 100px;
+	text-align: center;
+}
+.modal_style input{
+	margin: 20px auto;
+}
+
+#dialogPubic .modal-body a{
+ 	color: #666;
+}
+
+.modal_style_title{
+	color: #000000;
+	font-size: 16px;
 }

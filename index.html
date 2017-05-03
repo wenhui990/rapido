@@ -74,7 +74,7 @@
 							</a>
 						</div>
 						<div class="user-profile border-top padding-horizontal-10 block">
-							<div class="inline-block">
+							<div class="inline-block" id="role_img">
 								<img src="assets/images/圆角.png" width="50" height="50" alt="">
 							</div>
 							<div class="inline-block">
@@ -94,14 +94,17 @@
 					<!-- end: SIDEBAR -->
 				</div>
 				<div class="slide-tools">
-					<div class="col-xs-6 text-left no-padding">
-						<a class="btn btn-sm status login_phone" href="#">
+					<div class="col-xs-8 text-left no-padding">
+						<a class="btn btn-sm status login_phone wxPhoneLogin" href="#">
 							手机号登录
 						</a>
+						<a class="btn btn-sm status login_wx wxPhoneLogin" href="#">
+							微信登录
+						</a>
 					</div>
-					<div class="col-xs-6 text-right no-padding">
+					<div class="col-xs-4 text-right no-padding">
 						<a class="btn btn-sm log-out text-right" href="#">
-							<i class="fa fa-power-off"></i> Log Out
+							<i class="fa fa-power-off"></i> 退出
 						</a>
 					</div>
 				</div>
@@ -120,7 +123,7 @@
 								<div class="panel panel-white">
 									<div class="panel-body">
 										<div class="jumbotron">
-											<h1>欢迎来到经济日报后台管理系统！</h1>
+											<h1>中经趋势后台管理系统</h1>
 											<p class="lead">
 												详细操作点击左侧导航
 											</p>
@@ -209,6 +212,8 @@
 		<!-- start: CORE JAVASCRIPTS  -->
 		<script src="assets/js/main.js"></script>
 		<!-- end: CORE JAVASCRIPTS  -->
+		<script src="http://res.wx.qq.com/connect/zh_CN/htmledition/js/wxLogin.js"></script>
+		<script src="assets/js/jquery.cookie.js" type="text/javascript" charset="utf-8"></script>
 		<script src="assets/js/public.js" type="text/javascript" charset="utf-8"></script>
 		<script>
 			

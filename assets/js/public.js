@@ -5,6 +5,7 @@ $('#dialogPubic').load('login.html');
 var _href = "http://api.jjrb.grsx.cc", //"http://test.api.wantscart.com",
 	interfacelist = {
 		user_all: "/user/list", //所有用户
+		seach_user: "/user",
 		role: "/user/role",
 		user: "/user/",
 		feed: "/feed/",
@@ -18,7 +19,8 @@ var _href = "http://api.jjrb.grsx.cc", //"http://test.api.wantscart.com",
 		phone_login: "/login", //"/api/login", //手机登录post  phone=&code=
 		wx: "/login/wx",
 	},
-	n = 1;
+	n = 1,
+	token = localStorage.token || $.cookie('token');
 
 //点击登录区域阻止冒泡
 $("#phone div.modal-body,#WeChat div.modal-body").on("click", function(e) {
@@ -35,62 +37,44 @@ $("#phone div.modal-body,#WeChat div.modal-body").on("click", function(e) {
 //	});
 //});
 
-//切换手机微信登陆界面 - 方法1
-function toggle_login(clas, a, b) {
-	$(document).on("click", clas, function(e) {
-		//			e.stopPropagation();
-		//			alert(a+"==="+b);
-		$(document.body).css({
-			"overflow": "hidden"
-		});
-
-		$(a).show();
-		$(b).hide();
-		if(clas == ".login_wechat" || a == "#WeChat") {
-			var obj = new WxLogin({
-				id: "wx",
-				appid: "wx1bbe2aa6dfb5768b",
-
-				redirect_uri: encodeURIComponent(_href + interfacelist.wx),
-				state: Math.ceil(Math.random() * 1000),
-				scope: 'snsapi_login',
-				style: "",
-				href: ""
-			});
-			//				$.ajax({
-			//					type: "post",
-			//					url: _href + interfacelist.wx,
-			//					data: {
-			//						expire_in: 1,
-			//						open_id: 'wx1bbe2aa6dfb5768b',
-			//						token: localStorage.token,
-			//						refresh_token: "343"
-			//					},
-			//					async: true,
-			//					success: function(e) {
-			//						console.log(e);
-			//					}
-			//				});
-			//				$("#wx").find("img").attr("src","");
-		}
-		$("#input_Phone").focus();
+// 退出登录
+$('.log-out').click(function() {
+	localStorage.clear();
+	$.cookie('token', '', {
+		'domain': '.jjrb.grsx.cc',
+		'path': '/',
+		'expires': -1
 	});
-};
-toggle_login(".login_wechat", "#WeChat", "#phone");
-toggle_login(".login_phone", "#phone", "#WeChat");
+	location.reload();
+});
 
-$('[data-target="#WeChat"]').click(function() {
-	$("#WeChat").show();
-	$("#phone").hide();
-	//		toggle_login(".login_wechat", "#WeChat", "#phone");
-})
-$('[data-target="#Phone"]').click(function() {
-	$("#WeChat").hide();
-	$("#phone").show();
-	//		toggle_login(".login_phone", "#phone", "#WeChat");
-})
+//微信登陆界面 
+$(document).on("click", '.login_wx', function(e) {
+	//			e.stopPropagation();
+	//			alert(a+"==="+b);
+	$(document.body).css({
+		"overflow": "hidden"
+	});
+
+	$('#WeChat').show();
+	$('#phone').hide();
+	var obj = new WxLogin({
+		id: "wx",
+		appid: "wxf7eec57ef58d6a4b",
+		redirect_uri: encodeURIComponent('http://api.jjrb.grsx.cc/login/wx?f=' + encodeURIComponent(location.href)),
+		state: Math.ceil(Math.random() * 1000),
+		scope: 'snsapi_login',
+		style: "",
+		href: ""
+	});
+});
+$(document).on("click", '.login_phone', function(e) {
+	$('#WeChat').hide();
+	$('#phone').show();
+});
+
 //点击验证码登录
-$(document).on("click",".phone_code", function() {
+$(document).on("click", ".phone_code", function() {
 	$("#input_password,.phone_code").hide();
 	$(".fg_hide").show();
 	$(".btn_login").addClass("phone_code_login");
@@ -98,7 +82,7 @@ $(document).on("click",".phone_code", function() {
 	$("#input_Phone").focus();
 });
 //获取验证码
-$(document).stop(true, true).on("click","#code_btn",function(e) {
+$(document).stop(true, true).on("click", "#code_btn", function(e) {
 	var _phone = $("#input_Phone").val();
 	if(_phone.length < 11 || _phone == "" || _phone.length > 11) {
 		$('#dialogPulic').find('.modal-body').text("请输入正确的手机号");
@@ -123,7 +107,7 @@ $(document).stop(true, true).on("click","#code_btn",function(e) {
 	});
 });
 //点击手机号号登录
-$(document).on("click",".phone_no", function() {
+$(document).on("click", ".phone_no", function() {
 	$("#input_password,.phone_code").show();
 	$(".fg_hide").hide();
 	$(".btn_login").addClass("phone_login");
@@ -131,7 +115,7 @@ $(document).on("click",".phone_no", function() {
 	$("#input_Phone").focus();
 });
 //登录
-$(document).on("click",".btn_login",function() {
+$(document).on("click", ".btn_login", function() {
 
 	var _classname = $(this).attr("class"),
 		_phone = $("#input_Phone").val(),
@@ -186,7 +170,7 @@ $(document).on("click",".btn_login",function() {
 				console.log(e);
 				if(e.msg == "无效的短信验证码") {
 					$('#dialogPulic').find('.modal-body').text('无效的验证码！');
-				$('#dialogPulic').modal('show');
+					$('#dialogPulic').modal('show');
 					console.log(e.detail + "===");
 					return false;
 				}
@@ -205,11 +189,24 @@ $(document).on("click",".btn_login",function() {
 		});
 	}
 });
-// 退出登录
-$(document).on('click', '#exit', function() {
-	localStorage.clear();
-	window.location.reload();
-});
+
+// token判断
+setTimeout(function() {
+	if(!token) {
+		$('.wxPhoneLogin').show();
+		$('.login_phone').click();
+	} else {
+		var _img;
+		$('.wxPhoneLogin').hide();
+		$('nav').find('h4.no-margin').text(localStorage.userName || decodeURIComponent($.cookie('name')));
+		if(localStorage.head || $.cookie('head')) {
+			_img = localStorage.head || $.cookie('head');
+		} else {
+			_img = 'assets/images/anonymous.jpg';
+		}
+		$('#role_img').find('img').attr('src', _img);
+	}
+}, 500);
 
 // 点击左侧导航事件
 $(document).on('click', ".navlist_a", function() {
@@ -252,8 +249,8 @@ setTimeout(function() {
 	// 弹窗高度
 	var dialogHeight = $('#dialogPulic').find('.modal-content').height();
 	var windowHeight = $(window).height();
-	var dialogTop = (windowHeight/2) - 170;
-	$('#dialogPulic').css('top',dialogTop+'px');
+	var dialogTop = (windowHeight / 2) - 170;
+	$('#dialogPulic').css('top', dialogTop + 'px');
 }, 600);
 
 // 弹窗高度
@@ -285,7 +282,7 @@ $(document).on('click', '.nvDescp', function() {
 		url: _href + interfacelist.feed + _id,
 		async: true,
 		data: {
-			token: localStorage.token
+			token: token
 		},
 		success: function(data) {
 			console.log(data);
@@ -348,7 +345,7 @@ $(document).on("click", ".delete", function() {
 	$('#myDelModal').on('click', 'button.del_btn', function() {
 		console.log(_id);
 		var type = "delete",
-		_url = _href + interfacelist.feed + _id + '?token=' + localStorage.token;
+			_url = _href + interfacelist.feed + _id + '?token=' + token;
 		manageNV(type, _url);
 		_this.parents('tr').empty();
 		$('.del_btn').removeClass('del_btn');
@@ -359,7 +356,7 @@ $(document).on("click", ".delete", function() {
 function manageNV(type, _url, pass) {
 	$.ajax({
 		type: type,
-		url: _url + '?token=' + localStorage.token,
+		url: _url + '?token=' + token,
 		async: false,
 		success: function(data) {
 			if(data.msg === 'success') {
@@ -393,9 +390,9 @@ function manageNV(type, _url, pass) {
 }
 
 // 加载用户列表方法
-function loadUsers(n,role,id,name) {
+function loadUsers(n, role, id, name) {
 	var _url;
-	switch (role){
+	switch(role) {
 		case '0':
 			_url = _href + interfacelist.user_all + '/0';
 			break;
@@ -409,27 +406,29 @@ function loadUsers(n,role,id,name) {
 			_url = _href + interfacelist.user_all + '/9';
 			break;
 		case 'w':
-			_url = _href + interfacelist.user_all + '/w/' + name;
+			_url = _href + interfacelist.seach_user + '/w/' + name;
 			break;
 		default:
 			_url = _href + interfacelist.user_all;
 			break;
 	}
+	$(id).find("tbody").html('');
 	$.ajax({
 		type: "get",
 		url: _url,
 		async: true,
 		data: {
-			token: localStorage.token,
+			token: token,
 			page: n
 		},
 		success: function(data) {
 			$('.loading').hide();
 			$.each(data, function(i, e) {
 				var html;
+				var _head = e.head ? e.head : 'assets/images/anonymous.jpg';
 				if(e.role === 0) {
 					html = '<tr><td class="center">' + e.id + '</td>' +
-						'<td><img src="' + e.head + '" width="100" height="100" alt="用户头像" /></td>' +
+						'<td><img src="' + _head + '" width="100" height="100" alt="用户头像" /></td>' +
 						'<td class="hidden-xs">' + e.name + '</td>' +
 						'<td>' + e.sign + '</td>' +
 						'<td class="center" style="min-width:120px">' +
@@ -438,10 +437,10 @@ function loadUsers(n,role,id,name) {
 						'	    <option value=0 selected><a href="#" name="a-role" val="0"><i class="fa fa-user"></i>普通用户</a></option>' +
 						'	    <option value=1><a href="#" name="a-role" val="1"><i class="fa fa-film"></i>专家</a></option>' +
 						'<option value=2><a href="#" name="a-role" val="2"><i class="fa fa-film"></i>系统账户</a></option></select></td>' +
-						'<td class="edit_role" data-id="'+e.id+'"><button class="btn btn-primary btn-xs">修改</button></td></tr>';
+						'<td class="edit_role" data-id="' + e.id + '"><button class="btn btn-primary btn-xs">修改</button></td></tr>';
 				} else if(e.role === 1) {
 					html = '<tr><td class="center">' + e.id + '</td>' +
-						'<td><img src="' + e.head + '" width="100" height="100" alt="用户头像" /></td>' +
+						'<td><img src="' + _head + '" width="100" height="100" alt="用户头像" /></td>' +
 						'<td class="hidden-xs">' + e.name + '</td>' +
 						'<td>' + e.sign + '</td>' +
 						'<td class="center"style="min-width:120px">' +
@@ -450,10 +449,10 @@ function loadUsers(n,role,id,name) {
 						'	    <option value=0><a href="#" name="a-role" val="0"><i class="fa fa-user"></i>普通用户</a></option>' +
 						'	    <option value=1 selected><a href="#" name="a-role" val="1"><i class="fa fa-film"></i>专家</a></option>' +
 						'<option value=2><a href="#" name="a-role" val="2"><i class="fa fa-film"></i>系统账户</a></option></select></td>' +
-						'<td class="edit_role" data-id="'+e.id+'"><button class="btn btn-primary btn-xs">修改</button></td></tr>';
+						'<td class="edit_role" data-id="' + e.id + '"><button class="btn btn-primary btn-xs">修改</button></td></tr>';
 				} else if(e.role === 9) {
 					html = '<tr><td class="center">' + e.id + '</td>' +
-						'<td><img src="' + e.head + '" width="100" height="100" alt="用户头像" /></td>' +
+						'<td><img src="' + _head + '" width="100" height="100" alt="用户头像" /></td>' +
 						'<td class="hidden-xs">' + e.name + '</td>' +
 						'<td>' + e.sign + '</td>' +
 						'<td class="center"style="min-width:120px">' +
@@ -462,11 +461,11 @@ function loadUsers(n,role,id,name) {
 						'	    <option value=0><a href="#" name="a-role" val="0"><i class="fa fa-user"></i>普通用户</a></option>' +
 						'	    <option value=1><a href="#" name="a-role" val="1"><i class="fa fa-film"></i>专家</a></option>' +
 						'<option value=2><a href="#" name="a-role" val="2"><i class="fa fa-film"></i>系统账户</a></option></select></td>' +
-						'<td class="edit_role" data-id="'+e.id+'"><button class="btn btn-primary btn-xs">修改</button></td></tr>';
+						'<td class="edit_role" data-id="' + e.id + '"><button class="btn btn-primary btn-xs">修改</button></td></tr>';
 					$("#role").find("option[value='9']").attr("selected", "selected");
-				}else if(e.role === 2) {
+				} else if(e.role === 2) {
 					html = '<tr><td class="center">' + e.id + '</td>' +
-						'<td><img src="' + e.head + '" width="100" height="100" alt="用户头像" /></td>' +
+						'<td><img src="' + _head + '" width="100" height="100" alt="用户头像" /></td>' +
 						'<td class="hidden-xs">' + e.name + '</td>' +
 						'<td>' + e.sign + '</td>' +
 						'<td class="center"style="min-width:120px">' +
@@ -475,7 +474,7 @@ function loadUsers(n,role,id,name) {
 						'	    <option value="0"><a href="#" name="a-role" val="0"><i class="fa fa-user"></i>普通用户</a></option>' +
 						'	    <option value="1"><a href="#" name="a-role" val="1"><i class="fa fa-film"></i>专家</a></option>' +
 						'		<option value="2" selected><a href="#" name="a-role" val="2"><i class="fa fa-film"></i>系统账户</a></option></select></td>' +
-						'<td class="edit_role" data-id="'+e.id+'"><button class="btn btn-primary btn-xs">修改</button></td></tr>';
+						'<td class="edit_role" data-id="' + e.id + '"><button class="btn btn-primary btn-xs">修改</button></td></tr>';
 				}
 				$(id).find("tbody").append(html);
 			});
@@ -484,23 +483,24 @@ function loadUsers(n,role,id,name) {
 };
 
 // 修改用户角色方法
-function editRole(_id, roleVal,all) {
-	var _url,_data;
-	if(all){
+function editRole(_id, roleVal, all) {
+	var _url, _data;
+	if(all) {
 		_url = _href + interfacelist.user + _id;
 		_data = {
 			name: $('#inputName').val(),
 			gender: $(':radio[name="gender"]:checked').val(),
 			sign: $('#inputSign').val(),
 			intro: $('#inputIntro').val(),
-			token: localStorage.token
+			head: $('#imgShow').attr('src'),
+			token: token
 		};
-	}else{
+	} else {
 		_url = _href + interfacelist.role;
 		_data = {
 			id: _id,
 			role: roleVal,
-			token: localStorage.token
+			token: token
 		}
 	}
 	$.ajax({
@@ -512,7 +512,7 @@ function editRole(_id, roleVal,all) {
 			if(data.code === 1 || data.msg === "success") {
 				$('#dialogPulic').find('.modal-body').text('修改成功！');
 				$('#dialogPulic').modal('show');
-			}else{
+			} else {
 				$('#dialogPulic').find('.modal-body').text('修改失败！');
 				$('#dialogPulic').modal('show');
 			}
@@ -531,11 +531,11 @@ function roleTabClick(n) {
 	$('#' + tabId).addClass('active in').siblings().removeClass('active in');
 	switch(tabId) {
 		case 'panel_common':
-			loadUsers(n, '0',tabId);
+			loadUsers(n, '0', tabId);
 			$("#myTab4").find('li').eq(1).click().addClass('active').siblings().removeClass('active');
 			break;
 		case 'panel_expert':
-			loadUsers(n, '1',tabId);
+			loadUsers(n, '1', tabId);
 			$("#myTab4").find('li').eq(2).click().addClass('active').siblings().removeClass('active');
 			break;
 		case 'panel_admin':
@@ -551,12 +551,11 @@ function roleTabClick(n) {
 			$("#myTab4").find('li').eq(5).click().addClass('active').siblings().removeClass('active');
 			break;
 		default:
-			loadUsers(n, null,tabId);
+			loadUsers(n, null, tabId);
 			$("#myTab4").find('li').eq(0).click().addClass('active').siblings().removeClass('active');
 			break;
 	}
 }
-
 
 // 新闻观点列表
 function newViewpoint(n, type, status, id) {
@@ -572,7 +571,7 @@ function newViewpoint(n, type, status, id) {
 		url: _href + interfacelist.feed,
 		async: true,
 		data: {
-			token: localStorage.token,
+			token: token,
 			type: type,
 			page: n,
 			status: status
@@ -580,10 +579,10 @@ function newViewpoint(n, type, status, id) {
 		success: function(data) {
 			//			console.log(data);
 			$('.loading').hide();
-			if(!data.length || data==='') {
+			if(!data.length || data === '') {
 				$('.tab-content').find('tbody').html('<td style="text-align:center;padding:10px 0" colspan="5">没有内容！</td>');
 			}
-			
+
 			$.each(data, function(i, e) {
 				var statushtml, now_status;
 				if(e.status === 0) {
@@ -660,7 +659,7 @@ function indicatorAndCountryGroup(n, type) {
 	console.log(type);
 	all_data = {
 		page: n,
-		token: localStorage.token
+		token: token
 	};
 	if(type.indexOf("group") >= 0) {
 		all_url = _href + interfacelist.group;
@@ -749,12 +748,12 @@ function indicatorAndCountryGroup(n, type) {
 			_url = _href + interfacelist.group + _id;
 			if(_idName.indexOf('indicatorName') >= 0) {
 				data = {
-					token: localStorage.token,
+					token: token,
 					name: $input.val()
 				}
 			} else if(_idName.indexOf('indicatorDescpG') >= 0) {
 				data = {
-					token: localStorage.token,
+					token: token,
 					descp: $input.val()
 				}
 			}
@@ -762,12 +761,12 @@ function indicatorAndCountryGroup(n, type) {
 			_url = _href + interfacelist.country + _id;
 			if(_idName.indexOf('countryCnName') >= 0) {
 				data = {
-					token: localStorage.token,
+					token: token,
 					name_zh: $input.val()
 				}
 			} else if(_idName.indexOf('countryEnName') >= 0) {
 				data = {
-					token: localStorage.token,
+					token: token,
 					name_en: $input.val()
 				}
 			}
@@ -775,17 +774,17 @@ function indicatorAndCountryGroup(n, type) {
 			_url = _href + interfacelist.indicator + _id;
 			if(_idName.indexOf('indicatorCnName') >= 0) {
 				data = {
-					token: localStorage.token,
+					token: token,
 					name_zh: $input.val()
 				}
 			} else if(_idName.indexOf('indicatorEnName') >= 0) {
 				data = {
-					token: localStorage.token,
+					token: token,
 					name_es: $input.val()
 				}
 			} else if(_idName.indexOf('indicatorDescp') >= 0) {
 				data = {
-					token: localStorage.token,
+					token: token,
 					descp: $input.val()
 				}
 			}
@@ -902,4 +901,32 @@ function forms(p, c) {
 		}
 	}
 
+}
+//上传图片
+function uploadImg(fileId, imgId) {
+	var formData = new FormData();
+//	console.log($(fileId)[0].files[0])
+	formData.append('file', $(fileId)[0].files[0]);
+//	console.log(formData);
+	$.ajax({
+		url: 'http://api.jjrb.grsx.cc/upload',
+		type: 'POST',
+		cache: false,
+		data: formData,
+		processData: false,
+		contentType: false,
+		success: function(data) {
+//			console.log(data);
+//			console.log(fileId);
+//			console.log(imgId);
+			$(imgId).prop("src", data.url);
+		},
+		error: function(data) {
+			console.log(data);
+			if(data.status == 0) {
+				$('#dialogPulic').find('.modal-body').text('上传头像失败，图片不要超过1M！');
+				$('#dialogPulic').modal('show');
+			}
+		}
+	}).done(function(res) {}).fail(function(res) {});
 }
