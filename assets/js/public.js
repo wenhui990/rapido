@@ -528,22 +528,23 @@ function editRole(_id, roleVal, all) {
 function roleTabClick(n) {
 	var _url = window.location.href;
 	var tabId = _url.split('#')[1];
-	$('#' + tabId).addClass('active in').siblings().removeClass('active in');
+	$('#' + tabId).click().addClass('active in').siblings().removeClass('active in');
 	switch(tabId) {
 		case 'panel_common':
-			loadUsers(n, '0', tabId);
+//			loadUsers(n, '0', tabId);
 			$("#myTab4").find('li').eq(1).click().addClass('active').siblings().removeClass('active');
 			break;
 		case 'panel_expert':
-			loadUsers(n, '1', tabId);
+//			loadUsers(n, '1', tabId);
 			$("#myTab4").find('li').eq(2).click().addClass('active').siblings().removeClass('active');
 			break;
 		case 'panel_admin':
-			loadUsers(n, '9', tabId);
+			
 			$("#myTab4").find('li').eq(3).click().addClass('active').siblings().removeClass('active');
+//			loadUsers(n, '9', tabId);
 			break;
 		case 'panel_system':
-			loadUsers(n, '2', tabId);
+//			loadUsers(n, '2', tabId);
 			$("#myTab4").find('li').eq(4).click().addClass('active').siblings().removeClass('active');
 			break;
 		case 'panel_search':
@@ -551,7 +552,7 @@ function roleTabClick(n) {
 			$("#myTab4").find('li').eq(5).click().addClass('active').siblings().removeClass('active');
 			break;
 		default:
-			loadUsers(n, null, tabId);
+//			loadUsers(n, null, tabId);
 			$("#myTab4").find('li').eq(0).click().addClass('active').siblings().removeClass('active');
 			break;
 	}

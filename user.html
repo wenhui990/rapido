@@ -428,10 +428,10 @@
 				Main.init();
 				//				SVExamples.init();
 				UIElements.init();
+				var _url = window.location.href;
+				var tabId = _url.split('#')[1];
+				var _id = '#'+tabId || '#panel_overview',n=1,role=null,_name;
 				
-				var _id = '#panel_overview',n=1;
-				//加载用户列表
-				loadUsers(n,null,_id);
 				// 点击上一页下一页
 				$(document).on("click", "#prvePage,#nextPage", function() {
 					$('.loading').show();
@@ -439,7 +439,8 @@
 					var cv = $(this).attr("id");
 					cv === 'prvePage' ? n-- : n++;
 					if(n < 1) n = 1;
-					loadUsers(n,null,_id);
+					$("#pageVal").val(n);
+					loadUsers(n,role,_id,_name);
 				});
 
 				// 点击确定跳转页面
@@ -455,19 +456,35 @@
 					if(pageVal < 1) {
 						$("#pageVal").val(1);
 					}
-					loadUsers(pageVal,null,_id);
+					loadUsers(pageVal,role,_id,_name);
 					n = pageVal;
 				});
 				
+				// 键盘延迟事件只执行最后一次
+				var _timer = {};
+				function delay_till_last(id, fn, wait) {
+				    if (_timer[id]) {
+				        window.clearTimeout(_timer[id]);
+				        delete _timer[id];
+				    }
+				
+				    return _timer[id] = window.setTimeout(function() {
+				        fn();
+				        delete _timer[id];
+				    }, wait);
+				}
+
+				
 				// 搜索用户
 				$(document).on('keyup','#search_role',function(e){
-					$('#myTab4').find('li').eq(5).click();
-					var _name = $(this).val();
+					_name = $(this).val();
 					_id = '#panel_search';
 					n=1;
-					roleTabClick();
-					loadUsers(n,'w',_id,_name);
-					
+					role = 'w'
+					delay_till_last('search_role', function(){
+						window.history.pushState('',0,_id);
+						roleTabClick(n);
+					}, 800);
 				});
 				
 				// 修改用户角色
@@ -508,16 +525,16 @@
 				
 				// 点击标签切换状态
 				$("#myTab4").on('click','li',function(){
+					n=1;
+					$("#pageVal").val(n);
 					$('.loading').show();
-					var _role = $(this).attr("data-role");
+					role = $(this).attr("data-role");
 					_id = $(this).find('a').attr("href");
 					$(_id).find('tbody').html('');
 					window.history.pushState({},0,_id); 
-					loadUsers(n,_role,_id);
+					loadUsers(n,role,_id,_name);
 				});
-				
 				roleTabClick(n);
-				
 			});
 		</script>
 	</body>
