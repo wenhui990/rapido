@@ -426,57 +426,40 @@ function loadUsers(n, role, id, name) {
 			$.each(data, function(i, e) {
 				var html;
 				var _head = e.head ? e.head : 'assets/images/anonymous.jpg';
-				if(e.role === 0) {
-					html = '<tr><td class="center">' + e.id + '</td>' +
+				html = '<tr><td class="center">' + e.id + '</td>' +
 						'<td><img src="' + _head + '" width="100" height="100" alt="用户头像" /></td>' +
 						'<td class="hidden-xs">' + e.name + '</td>' +
 						'<td>' + e.sign + '</td>' +
 						'<td class="center" style="min-width:120px">' +
-						'	<select class="form-control roles">' +
+						'	<select class="form-control roles roles'+i+'">' +
 						'	    <option value=9><a href="#" name="a-role" val="9"><i class="fa fa-user-md"></i>管理员 </a></option>' +
-						'	    <option value=0 selected><a href="#" name="a-role" val="0"><i class="fa fa-user"></i>普通用户</a></option>' +
-						'	    <option value=1><a href="#" name="a-role" val="1"><i class="fa fa-film"></i>专家</a></option>' +
-						'<option value=2><a href="#" name="a-role" val="2"><i class="fa fa-film"></i>系统账户</a></option></select></td>' +
-						'<td class="edit_role" data-id="' + e.id + '"><button class="btn btn-primary btn-xs">修改</button></td></tr>';
-				} else if(e.role === 1) {
-					html = '<tr><td class="center">' + e.id + '</td>' +
-						'<td><img src="' + _head + '" width="100" height="100" alt="用户头像" /></td>' +
-						'<td class="hidden-xs">' + e.name + '</td>' +
-						'<td>' + e.sign + '</td>' +
-						'<td class="center"style="min-width:120px">' +
-						'	<select class="form-control roles">' +
-						'	    <option value=9><a href="#" name="a-role" val="9"><i class="fa fa-user-md"></i>管理员 </a></option>' +
-						'	    <option value=0><a href="#" name="a-role" val="0"><i class="fa fa-user"></i>普通用户</a></option>' +
-						'	    <option value=1 selected><a href="#" name="a-role" val="1"><i class="fa fa-film"></i>专家</a></option>' +
-						'<option value=2><a href="#" name="a-role" val="2"><i class="fa fa-film"></i>系统账户</a></option></select></td>' +
-						'<td class="edit_role" data-id="' + e.id + '"><button class="btn btn-primary btn-xs">修改</button></td></tr>';
-				} else if(e.role === 9) {
-					html = '<tr><td class="center">' + e.id + '</td>' +
-						'<td><img src="' + _head + '" width="100" height="100" alt="用户头像" /></td>' +
-						'<td class="hidden-xs">' + e.name + '</td>' +
-						'<td>' + e.sign + '</td>' +
-						'<td class="center"style="min-width:120px">' +
-						'	<select class="form-control roles">' +
-						'	    <option value=9 selected><a href="#" name="a-role" val="9"><i class="fa fa-user-md"></i>管理员 </a></option>' +
 						'	    <option value=0><a href="#" name="a-role" val="0"><i class="fa fa-user"></i>普通用户</a></option>' +
 						'	    <option value=1><a href="#" name="a-role" val="1"><i class="fa fa-film"></i>专家</a></option>' +
 						'<option value=2><a href="#" name="a-role" val="2"><i class="fa fa-film"></i>系统账户</a></option></select></td>' +
 						'<td class="edit_role" data-id="' + e.id + '"><button class="btn btn-primary btn-xs">修改</button></td></tr>';
-					$("#role").find("option[value='9']").attr("selected", "selected");
-				} else if(e.role === 2) {
-					html = '<tr><td class="center">' + e.id + '</td>' +
-						'<td><img src="' + _head + '" width="100" height="100" alt="用户头像" /></td>' +
-						'<td class="hidden-xs">' + e.name + '</td>' +
-						'<td>' + e.sign + '</td>' +
-						'<td class="center"style="min-width:120px">' +
-						'	<select class="form-control roles">' +
-						'	    <option value="9"><a href="#" name="a-role" val="9"><i class="fa fa-user-md"></i>管理员 </a></option>' +
-						'	    <option value="0"><a href="#" name="a-role" val="0"><i class="fa fa-user"></i>普通用户</a></option>' +
-						'	    <option value="1"><a href="#" name="a-role" val="1"><i class="fa fa-film"></i>专家</a></option>' +
-						'		<option value="2" selected><a href="#" name="a-role" val="2"><i class="fa fa-film"></i>系统账户</a></option></select></td>' +
-						'<td class="edit_role" data-id="' + e.id + '"><button class="btn btn-primary btn-xs">修改</button></td></tr>';
-				}
 				$(id).find("tbody").append(html);
+				if(role === 'w'){
+					switch (e.role){
+						case 9:
+							$('.roles'+i).find('option[value=9]').attr('selected','true');
+							break;
+						case 2:
+							$('.roles'+i).find('option[value=2]').attr('selected','true');
+							break;
+						case 1:
+							$('.roles'+i).find('option[value=1]').attr('selected','true');
+							break;
+						case 0:
+							$('.roles'+i).find('option[value=0]').attr('selected','true');
+							break;
+						default:
+							break;
+					}
+				}else{
+					$('option[value='+e.role+']').attr('selected','true');
+				}
+				
+				
 			});
 		}
 	});
@@ -531,28 +514,22 @@ function roleTabClick(n) {
 	$('#' + tabId).click().addClass('active in').siblings().removeClass('active in');
 	switch(tabId) {
 		case 'panel_common':
-//			loadUsers(n, '0', tabId);
 			$("#myTab4").find('li').eq(1).click().addClass('active').siblings().removeClass('active');
 			break;
 		case 'panel_expert':
-//			loadUsers(n, '1', tabId);
 			$("#myTab4").find('li').eq(2).click().addClass('active').siblings().removeClass('active');
 			break;
 		case 'panel_admin':
 			
 			$("#myTab4").find('li').eq(3).click().addClass('active').siblings().removeClass('active');
-//			loadUsers(n, '9', tabId);
 			break;
 		case 'panel_system':
-//			loadUsers(n, '2', tabId);
 			$("#myTab4").find('li').eq(4).click().addClass('active').siblings().removeClass('active');
 			break;
 		case 'panel_search':
-//			loadUsers(n, 'w', tabId);
 			$("#myTab4").find('li').eq(5).click().addClass('active').siblings().removeClass('active');
 			break;
 		default:
-//			loadUsers(n, null, tabId);
 			$("#myTab4").find('li').eq(0).click().addClass('active').siblings().removeClass('active');
 			break;
 	}
