@@ -493,7 +493,7 @@ function editRole(_id, roleVal, all) {
 	$.ajax({
 		type: "PUT",
 		url: _url,
-		async: true,
+		async: false,
 		data: _data,
 		success: function(data) {
 			if(data.code === 1 || data.msg === "success") {
@@ -503,6 +503,7 @@ function editRole(_id, roleVal, all) {
 				$('#dialogPulic').find('.modal-body').text('修改失败！');
 				$('#dialogPulic').modal('show');
 			}
+			loadUsers(glUser.userN,glUser.userRole,glUser.userId,glUser.userName);
 		},
 		error: function(d) {
 			$('#dialogPulic').find('.modal-body').text("修改失败！" + d.statusText);
