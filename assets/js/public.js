@@ -262,8 +262,8 @@ setTimeout(function() {
 dialogPubic();
 // 公用弹窗
 function dialogPubic() {
-	var dialogHtml = '<div class="modal fade" id="dialogPulic" tabindex="-1" role="dialog">' +
-		'<div class="modal-dialog" role="document">' +
+	var dialogHtml = '<div class="modal fade bs-example-modal-sm" id="dialogPulic" tabindex="-1" role="dialog">' +
+		'<div class="modal-dialog modal-sm" role="document">' +
 		'<div class="modal-content">' +
 		'<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">信息</h4></div>' +
 		'	<div class="modal-body">确定删除吗？</div>' +
@@ -342,13 +342,16 @@ $(document).on("click", ".delete", function() {
 	$('#myDelModal .modal-footer').find('button.btn-success').addClass('del_btn');
 	var _id = $(this).attr("data-id");
 	var _this = $(this);
+	$('#myDelModal').modal('show');
 	$('#myDelModal').on('click', 'button.del_btn', function() {
 		console.log(_id);
+		$('#myDelModal').modal('hide');
 		var type = "delete",
-			_url = _href + interfacelist.feed + _id + '?token=' + token;
+		_url = _href + interfacelist.feed + _id + '?token=' + token;
 		manageNV(type, _url);
-		_this.parents('tr').empty();
+		_this.parents('tr').remove();
 		$('.del_btn').removeClass('del_btn');
+		
 	});
 });
 
@@ -361,10 +364,11 @@ function manageNV(type, _url, pass) {
 		success: function(data) {
 			if(data.msg === 'success') {
 				if(type === 'delete') {
+					$('#myDelModal').modal('hide');
 					$('#dialogPulic').find('.modal-body').text('删除成功！');
 					$('#dialogPulic').modal('show');
-					$('#myDelModal').off();
-					$('button.del_btn').off();
+//					$('#myDelModal').off();
+//					$('button.del_btn').off();
 				} else {
 					if(pass) {
 						$('#dialogPulic').find('.modal-body').text('审核成功！');
@@ -566,17 +570,17 @@ function newViewpoint(n, type, status, id) {
 				if(e.status === 0) {
 					statushtml = '<a href="#" class="btn btn-success btn-xs pass" data-id="' + e.id + '" title="审核通过"><span class="glyphicon glyphicon-ok"></span></a>' +
 						'		<a href="#" class="btn btn-light-blue btn-xs nopass" data-id="' + e.id + '" title="不通过"><span class="glyphicon glyphicon-ban-circle"></span></a>' +
-						'		<a href="#" class="btn btn-red btn-xs delete" data-id="' + e.id + '" data-toggle="modal" data-target="#myDelModal" title="删除新闻"><span class="glyphicon glyphicon-remove"></span></a>';
+						'		<a href="#" class="btn btn-red btn-xs delete" data-id="' + e.id + '"  title="删除新闻"><span class="glyphicon glyphicon-remove"></span></a>';
 					now_status = '<span class="status_txt">待审核</span>';
 				} else if(e.status === 1) {
-					statushtml = '<a href="#" class="btn btn-red btn-xs delete" data-id="' + e.id + '" data-toggle="modal" data-target="#myDelModal" title="删除新闻"><span class="glyphicon glyphicon-remove"></span></a>';
+					statushtml = '<a href="#" class="btn btn-red btn-xs delete" data-id="' + e.id + '"  title="删除新闻"><span class="glyphicon glyphicon-remove"></span></a>';
 					now_status = '已审核';
 				} else if(e.status === (-100)) {
 					statushtml = '';
 					now_status = '已删除';
 				} else if(e.status === (-1)) {
 					statushtml = '<a href="#" class="btn btn-success btn-xs pass" data-id="' + e.id + '" title="审核通过"><span class="glyphicon glyphicon-ok"></span></a>' +
-						'		<a href="#" class="btn btn-red btn-xs delete" data-id="' + e.id + '" data-toggle="modal" data-target="#myDelModal" title="删除新闻"><span class="glyphicon glyphicon-remove"></span></a>';
+						'		<a href="#" class="btn btn-red btn-xs delete" data-id="' + e.id + '"  title="删除新闻"><span class="glyphicon glyphicon-remove"></span></a>';
 					now_status = '未通过';
 				}
 				var html = '<tr><td class="center">' + e.id + '</td>' +
