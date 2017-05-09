@@ -20,7 +20,29 @@ var _href = "http://api.jjrb.grsx.cc", //"http://test.api.wantscart.com",
 		wx: "/login/wx",
 	},
 	n = 1,
-	token = localStorage.token || $.cookie('token');
+	token = localStorage.token || $.cookie('token'),
+	uid = localStorage.userId || $.cookie('id');
+	
+// 是否管理员
+function isAdmin(uid){
+	$.ajax({
+		type:"get",
+		url:_href + interfacelist.user + uid,
+		async:true,
+		success: function(data){
+			console.log(data.role);
+			if(data.role!=9){
+				$('#dialogPulic').find('.modal-body').text("只有管理员才可登录后台，请联系管理员授权！");
+				$('#dialogPulic').modal('show');
+				$('#dialogPulic').on('hide.bs.modal',function(){
+					$('.wxPhoneLogin').show();
+					$('.login_phone').click();
+				});
+			}
+		}
+	});
+	
+};
 
 //点击登录区域阻止冒泡
 $("#phone div.modal-body,#WeChat div.modal-body").on("click", function(e) {
@@ -196,6 +218,7 @@ setTimeout(function() {
 		$('.wxPhoneLogin').show();
 		$('.login_phone').click();
 	} else {
+		isAdmin(uid);
 		var _img;
 		$('.wxPhoneLogin').hide();
 		$('nav').find('h4.no-margin').text(localStorage.userName || decodeURIComponent($.cookie('name')));
@@ -267,7 +290,7 @@ function dialogPubic() {
 		'<div class="modal-content">' +
 		'<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">信息</h4></div>' +
 		'	<div class="modal-body">确定删除吗？</div>' +
-		'	<div class="modal-footer"><button type="button" data-dismiss="modal" class="btn btn-success del_btn">确定</button></div>' +
+		'	<div class="modal-footer"><button type="button" data-dismiss="modal" class="btn btn-success del_btn_ok">确定</button></div>' +
 		'</div></div></div>';
 	$('body').append(dialogHtml);
 }
@@ -337,22 +360,22 @@ $(document).on("click", ".nopass", function() {
 	$(this).parents('tr').remove();
 });
 
+
+var newViewpointDelId,newViewpointDelThis;
 // 点击删除
 $(document).on("click", ".delete", function() {
-	$('#myDelModal .modal-footer').find('button.btn-success').addClass('del_btn');
-	var _id = $(this).attr("data-id");
-	var _this = $(this);
+//	$('#myDelModal .modal-footer').find('button.btn-success').addClass('del_btn');
+	newViewpointDelId = $(this).attr("data-id");
+	newViewpointDelThis = $(this);
 	$('#myDelModal').modal('show');
-	$('#myDelModal').on('click', 'button.del_btn', function() {
-		console.log(_id);
-		$('#myDelModal').modal('hide');
-		var type = "delete",
-		_url = _href + interfacelist.feed + _id + '?token=' + token;
-		manageNV(type, _url);
-		_this.parents('tr').remove();
-		$('.del_btn').removeClass('del_btn');
-		
-	});
+});
+$('#myDelModal').on('click', '.del_btn', function() {
+//	console.log(newViewpointDelId);
+	$('#myDelModal').modal('hide');
+	var type = "delete",
+	_url = _href + interfacelist.feed + newViewpointDelId + '?token=' + token;
+	manageNV(type, _url);
+	newViewpointDelThis.parents('tr').remove();
 });
 
 // 管理新闻和观点（审核、删除、通过不通过）
@@ -382,7 +405,7 @@ function manageNV(type, _url, pass) {
 			if(data.msg !== 'success') {
 				$('#dialogPulic').find('.modal-body').text('修改失败！');
 				$('#dialogPulic').modal('show');
-				return;
+//				return;
 			}
 			//			window.location.reload();
 		},
@@ -427,49 +450,51 @@ function loadUsers(n, role, id, name) {
 		},
 		success: function(data) {
 			$('.loading').hide();
-			$.each(data, function(i, e) {
-				var html;
-				var _head = e.head ? e.head : 'assets/images/anonymous.jpg';
-				html = '<tr><td class="center">' + e.id + '</td>' +
-						'<td><img src="' + _head + '" width="100" height="100" alt="用户头像" /></td>' +
-						'<td class="hidden-xs">' + e.name + '</td>' +
-						'<td>' + e.sign + '</td>' +
-						'<td class="center" style="min-width:120px">' +
-						'	<select class="form-control roles roles'+i+'">' +
-						'	    <option value=9><a href="#" name="a-role" val="9"><i class="fa fa-user-md"></i>管理员 </a></option>' +
-						'	    <option value=0><a href="#" name="a-role" val="0"><i class="fa fa-user"></i>普通用户</a></option>' +
-						'	    <option value=1><a href="#" name="a-role" val="1"><i class="fa fa-film"></i>专家</a></option>' +
-						'<option value=2><a href="#" name="a-role" val="2"><i class="fa fa-film"></i>系统账户</a></option></select></td>' +
-						'<td class="edit_role" data-id="' + e.id + '"><button class="btn btn-primary btn-xs">修改</button></td></tr>';
-				$(id).find("tbody").append(html);
-				if(role === 'w'){
-					switch (e.role){
-						case 9:
-							$('.roles'+i).find('option[value=9]').attr('selected','true');
-							break;
-						case 2:
-							$('.roles'+i).find('option[value=2]').attr('selected','true');
-							break;
-						case 1:
-							$('.roles'+i).find('option[value=1]').attr('selected','true');
-							break;
-						case 0:
-							$('.roles'+i).find('option[value=0]').attr('selected','true');
-							break;
-						default:
-							break;
-					}
-				}else{
-					$('option[value='+e.role+']').attr('selected','true');
-				}
-				
-				
-			});
+			if(data.length){
+				$.each(data, function(i, e) {
+					var html;
+					var _head = e.head ? e.head : 'assets/images/anonymous.jpg';
+					html = '<tr><td class="center">' + e.id + '</td>' +
+							'<td><img src="' + _head + '" width="100" height="100" alt="用户头像" /></td>' +
+							'<td class="hidden-xs">' + e.name + '</td>' +
+							'<td>' + e.sign + '</td>' +
+							'<td class="center" style="min-width:120px">' +
+							'	<select class="form-control roles roles'+i+'">' +
+							'	    <option value=9><a href="#" name="a-role" val="9"><i class="fa fa-user-md"></i>管理员 </a></option>' +
+							'	    <option value=0><a href="#" name="a-role" val="0"><i class="fa fa-user"></i>普通用户</a></option>' +
+							'	    <option value=1><a href="#" name="a-role" val="1"><i class="fa fa-film"></i>专家</a></option>' +
+							'<option value=2><a href="#" name="a-role" val="2"><i class="fa fa-film"></i>系统账户</a></option></select></td>' +
+							'<td class="edit_role" data-id="' + e.id + '"><button class="btn btn-primary btn-xs">修改</button></td></tr>';
+					$(id).find("tbody").append(html);
+	//				if(role === 'w'){
+						switch (e.role){
+							case 9:
+								$('.roles'+i).find('option[value=9]').attr('selected','true');
+								break;
+							case 2:
+								$('.roles'+i).find('option[value=2]').attr('selected','true');
+								break;
+							case 1:
+								$('.roles'+i).find('option[value=1]').attr('selected','true');
+								break;
+							case 0:
+								$('.roles'+i).find('option[value=0]').attr('selected','true');
+								break;
+							default:
+								break;
+						}
+	//				}else{
+	//					$('option[value='+e.role+']').attr('selected','true');
+	//				}
+					
+					
+				});
+			}
 		}
 	});
 };
 
-// 修改用户角色方法
+// 修改用户角色-更改资料方法
 function editRole(_id, roleVal, all) {
 	var _url, _data;
 	if(all) {
@@ -503,7 +528,8 @@ function editRole(_id, roleVal, all) {
 				$('#dialogPulic').find('.modal-body').text('修改失败！');
 				$('#dialogPulic').modal('show');
 			}
-			loadUsers(glUser.userN,glUser.userRole,glUser.userId,glUser.userName);
+//			loadUsers(glUser.userN,glUser.userRole,glUser.userId,glUser.userName);
+			roleTabClick(glUser.userN);
 		},
 		error: function(d) {
 			$('#dialogPulic').find('.modal-body').text("修改失败！" + d.statusText);
@@ -544,6 +570,7 @@ function roleTabClick(n) {
 function newViewpoint(n, type, status, id) {
 	var _src, _src_user = "my_viewpoint";
 	//	console.log(typeof(type))
+	$('.tab-content').find('tbody').html('');
 	if(type == 3) {
 		_src = "viewpoint_desc";
 	} else if(type == 4) {
@@ -618,19 +645,19 @@ function newViewpointTabClick(n, type) {
 	$('#' + tabId).addClass('active in').siblings().removeClass('active in');
 	switch(tabId) {
 		case 'panel_check_pending':
-			newViewpoint(n, type, 0);
+//			newViewpoint(n, type, 0);
 			$("#myTab4").find('li').eq(1).click().addClass('active').siblings().removeClass('active');
 			break;
 		case 'panel_refer':
-			newViewpoint(n, type, -1);
+//			newViewpoint(n, type, -1);
 			$("#myTab4").find('li').eq(2).click().addClass('active').siblings().removeClass('active');
 			break;
 		case 'panel_del':
-			newViewpoint(n, type, -100);
+//			newViewpoint(n, type, -100);
 			$("#myTab4").find('li').eq(3).click().addClass('active').siblings().removeClass('active');
 			break;
 		default:
-			newViewpoint(n, type);
+//			newViewpoint(n, type);
 			$("#myTab4").find('li').eq(0).click().addClass('active').siblings().removeClass('active');
 			break;
 	}

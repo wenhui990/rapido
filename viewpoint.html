@@ -353,15 +353,15 @@
 		<script src="http://res.wx.qq.com/connect/zh_CN/htmledition/js/wxLogin.js"></script>
 		<script src="assets/js/public.js" type="text/javascript" charset="utf-8"></script>
 		<script src="js/echarts.min.js" type="text/javascript" charset="utf-8"></script>
-		<script>
-			
-			jQuery(document).ready(function() {
+		<script type="text/javascript">
+			$(function() {
 				Main.init();
 //				SVExamples.init();
 				Index.init();
 				
 				var type=3,status,n=1;
-				newViewpoint(n,type);
+//				newViewpoint(n,type);
+				$("#pageVal").val(n);
 				// 点击上一页下一页
 				$(document).on("click","#prvePage,#nextPage",function(){
 					$('.loading').show();
@@ -370,6 +370,7 @@
 					cv === 'prvePage'?n--:n++;
 					if (n<1) n=1;
 					newViewpoint(n,type,status);
+					$("#pageVal").val(n);
 				});
 				
 				// 点击确定跳转页面
@@ -388,10 +389,17 @@
 					n = pageVal;
 				});
 				
+				$('#pageVal').on('keyup',function(e){
+					if (e.keyCode===13) {
+						$('#pageOk').click();
+					}
+				});
+				
 				// 点击标签切换状态
 				$("#myTab4").on("click","li",function(){
 					$('.loading').show();
 					n = 1;
+					$("#pageVal").val(n);
 					status =  $(this).attr("data-s");
 					var _id = $(this).find('a').attr("href");
 					$(_id).find('tbody').html('');

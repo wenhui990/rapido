@@ -351,21 +351,26 @@
 				Main.init();
 				//				SVExamples.init();
 				UIElements.init();
-
+				
+				var delType,delUrl,delThis;
+				
 				//加载分组列表
 				indicatorAndCountryGroup(n, "group");
 
 
 				// 删除分组
 				$(document).on("click", ".del_indicator_group", function() {
+//					$('#dialogPulic').find('button.btn-success').addClass('del_btn');
 					var _id = $(this).attr("data-id");
-					var _this = $(this);
-					var type = "delete",
-						_url = _href + interfacelist.group+_id;
-					$(document).on('click', '.del_btn', function() {
-						manageNV(type, _url);
-						_this.parents('tr').remove();
-					});
+					delThis = $(this);
+					delType = "delete",
+						delUrl = _href + interfacelist.group+_id;
+					
+				});
+				$(document).on('click', '.del_btn', function() {
+					manageNV(delType, delUrl);
+					delThis.parents('tr').remove();
+//					$('.del_btn').removeClass('del_btn');
 				});
 				// 创建分组
 				$(document).on("click", ".caretGroup", function(e) {
@@ -410,6 +415,7 @@
 					cv === 'prvePage' ? n-- : n++;
 					if(n < 1) n = 1;
 					indicatorAndCountryGroup(n,'group');
+					$("#pageVal").val(n);
 				});
 
 				// 点击确定跳转页面
@@ -425,8 +431,14 @@
 						$("#pageVal").val(1);
 					}
 					indicatorAndCountryGroup(pageVal,'group');
+					n = pageVal;
 				});
-
+				
+				$('#pageVal').on('keyup',function(e){
+					if (e.keyCode===13) {
+						$('#pageOk').click();
+					}
+				});
 			});
 		</script>
 	</body>

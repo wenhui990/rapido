@@ -429,6 +429,7 @@
 					cv === 'prvePage' ? n-- : n++;
 					if(n < 1) n = 1;
 					allIndicator(n);
+					$("#pageVal").val(n);
 				});
 				// 点击添加里的确定跳转页面
 				$(document).on("click", "#pageOk1", function() {
@@ -444,6 +445,12 @@
 					}
 					allIndicator(pageVal);
 					n = pageVal;
+				});
+				
+				$('#pageVal').on('keyup',function(e){
+					if (e.keyCode===13) {
+						$('#pageOk').click();
+					}
 				});
 
 				var lasttime;

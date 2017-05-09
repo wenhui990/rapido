@@ -461,7 +461,13 @@
 					n = pageVal;
 				});
 				
-				// 键盘延迟事件只执行最后一次
+				$('#pageVal').on('keyup',function(e){
+					if (e.keyCode===13) {
+						$('#pageOk').click();
+					}
+				});
+				
+				// 键盘延迟事件只执行最后一次方法
 				var _timer = {};
 				function delay_till_last(id, fn, wait) {
 				    if (_timer[id]) {
@@ -485,13 +491,14 @@
 					delay_till_last('search_role', function(){
 						window.history.pushState('',0,_id);
 						roleTabClick(n);
-					}, 800);
+					}, 500);
 				});
 				
 				// 修改用户角色
 				$(document).on("change", ".roles", function() {
 					var role = $(this).val();
 					var _idEdit = $(this).parents("tr").find("td").first().text();
+					$(this).find('option').attr('selected','false');
 					//					console.log(_id);
 					editRole(_idEdit, role);
 				});

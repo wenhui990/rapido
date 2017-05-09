@@ -276,6 +276,7 @@
 					cv === 'prvePage'?n--:n++;
 					if (n<1) n=1;
 					indicatorAndCountryGroup(n,"indicator.html");
+					$("#pageVal").val(n);
 				});
 				
 				// 点击确定跳转页面
@@ -294,7 +295,11 @@
 					n = pageVal;
 				});
 				
-				
+				$('#pageVal').on('keyup',function(e){
+					if (e.keyCode===13) {
+						$('#pageOk').click();
+					}
+				});
 				
 			});
 		</script>
