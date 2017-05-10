@@ -432,13 +432,15 @@
 				var tabId = _url.split('#')[1];
 				var _id = '#'+tabId || '#panel_overview',n=1,role=null,_name,userId;
 				
+				$("#pageVal").val(n);
+				role = roleTabClick(n,_name);
 				
 				// 点击上一页下一页
 				$(document).on("click", "#prvePage,#nextPage", function() {
 					$('.loading').show();
 					$("#projects").find("tbody").html('');
 					var cv = $(this).attr("id");
-					cv === 'prvePage' ? n-- : n++;
+					cv === 'prvePage' ? --n : ++n;
 					if(n < 1) n = 1;
 					$("#pageVal").val(n);
 					loadUsers(n,role,_id,_name);
@@ -490,7 +492,7 @@
 					role = 'w'
 					delay_till_last('search_role', function(){
 						window.history.pushState('',0,_id);
-						roleTabClick(n);
+						roleTabClick(n,_name);
 					}, 500);
 				});
 				
@@ -545,7 +547,7 @@
 					window.history.pushState({},0,_id); 
 					loadUsers(n,role,_id,_name);
 				});
-				roleTabClick(n);
+				
 				
 				window.glUser = {
 					'userN':n,
@@ -553,6 +555,7 @@
 					'userId': _id,
 					'userName':_name
 				}
+				
 			});
 		</script>
 	</body>

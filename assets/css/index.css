@@ -118,3 +118,7 @@
 	color: #000000;
 	font-size: 16px;
 }
+
+.main-wrapper{
+	/*z-index: 2;*/
+}
