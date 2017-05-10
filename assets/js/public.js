@@ -295,48 +295,201 @@ function dialogPubic() {
 	$('body').append(dialogHtml);
 }
 
-// 点击详情
-$(document).on('click', '.nvDescp', function() {
-	var _id = $(this).attr("data-id"),
-		descp = '';
-	$("#modalHtml").html('');
-	$.ajax({
-		type: "get",
-		url: _href + interfacelist.feed + _id,
-		async: true,
-		data: {
-			token: token
-		},
-		success: function(data) {
-			console.log(data);
-			$("h4.modal-title").text(data.title);
-			descp += '<div style="margin:10px auto;" id="header_img"><img src="' + data.cover + '" alt="热点图" class="hotspot_img" /></div>';
-			var a = $("<div></div>");
-			data.resources.forEach(function(res, inx) {
-				//				console.log(res);
-				var type = res.type;
-				if(type === 12) { //图片
-					descp += '<img src="' + res.uri + '">'
-				} else if(type === 13) { //文本
-					descp += '<p>' + res.descp + '</p>'
-				} else if(type === 15) { //数据
-					var _id = '';
-					if(res.descp) {
-						res.descp.length < 0 ? echarts_data = res.descp : echarts_data = JSON.parse(res.descp);
-						_id = echarts_data.id_val;
-					}
-					descp += '<div id="' + _id + '" style="min-height:500px;"></div>'
+//去重排序
+function uniqueSort(source, compareFn) {
+    var result = [];
+    if ('function' != typeof compareFn) {
+        compareFn = function (item1, item2) {
+            return parseInt(item1) - parseInt(item2);
+        };
+    }
+    $.each(source, function (i, v) {
+        if (i == 0) {
+            result.push(v);
+        } else {
+            //从最后开始
+            for (var j = result.length - 1; j >= 0; j--) {
+                var compare = compareFn(v, result[j]);
+                if (compare == 0){
+                    break;
+                }else if (compare > 0) {
+                    result.splice(j + 1, 0, v);
+                    break;
+                }
+                if (j == 0) {
+                    //到0还是小
+                    result.splice(0, 0, v);
+                }
+            }
+        }
+    });
+    return result;
+}
+
+// 图表加载
+function urlLoad(id, url, country, indicator, start, end, echartType) {
+	if(country) {
+		url += "&country=" + country;
+	}
+	if(indicator) {
+		url += "&indicator=" + indicator;
+	}
+	if(start) {
+		url += "&start=" + start;
+	}
+	if(end && end !== 'undefined') {
+		url += "&end=" + end;
+	}
+	
+	// 基于准备好的dom，初始化echarts图表
+	var myChart = echarts.init(document.getElementById(id), 'walden');
+
+	var fla = true,
+		s = {};
+
+	myChart.showLoading();
+	//异步加载方法
+	$.get(url).done(function(data) {
+		myChart.hideLoading();
+		// 填入数据
+		var ds = []; //merge后时间数组
+		var vs = []; //数据二维字典
+		var ss = [];
+		var cs = [];
+		var indicator_name_cn;
+		//merge时间，获得x轴分类
+		$.each(data, function(key, val) {
+			var d = []; //时间数组
+			var v = []; //数据字典
+			$.each(val.data, function(i, obj) {
+				v[obj.date] = obj.value;
+				d.push(obj.date);
+			});
+			$.merge(ds, d);
+			vs[key] = v;
+			indicator_name_cn = val.indicator.name_zh;
+			if(val.indicator.unit){
+				indicator_name_cn += '(单位：' +val.indicator.unit+ ')'
+			}
+			if($("#show_indicator_list_name")){
+				$("#show_indicator_list_name").text(val.indicator.name_zh);
+			}
+			if($("#show_indicator_list_name")){
+				$("#show_indicator_list_name").text(val.indicator.name_zh);
+			}
+			if($("#indicator")){
+				$("#indicator").val(val.indicator.name_zh);
+			}
+		});
+		ds = uniqueSort(ds);
+
+		//计算series
+		$.each(data, function(key, val) {
+			var s = {}; //series
+			var v = vs[key];
+			var _d = []; //data
+			$.each(ds, function(i, d) {
+				if(v[d]) {
+					_d.push(v[d]);
 				} else {
-					descp += res.descp
+					_d.push('');
 				}
 			});
-			$("#modalHtml").append(descp);
-		},
-		error: function(data, err) {
-			console.log(err);
-		}
+			cs.push(val.country.name);
+			//切换图表样式
+			if(!echartType || echartType == '' || echartType == undefined) {
+				echartType = 'line';
+				fla = false;
+			}
+			if(echartType === 'line' && echartType) {
+				fla = false;
+				s = {
+					name: val.country.name,
+					type: echartType,
+					smooth: true,
+					itemStyle: {
+						normal: {
+							areaStyle: {
+								type: 'default'
+							}
+						}
+					},
+					data: _d
+				}
+			} else if(echartType === 'bar' && echartType) {
+				fla = true;
+				s = {
+					name: val.country.name,
+					type: echartType,
+					itemStyle: {
+						normal: {
+							areaStyle: {
+								type: 'default'
+							}
+						}
+					},
+					data: _d
+				}
+			} else if(echartType === 'oneLine' && echartType){
+				s = {
+					name:val.country.name,
+		            type: 'line',
+		            data: _d
+				}
+			}
+			ss.push(s);
+
+		});
+		window.csName = cs;
+		myChart.setOption({
+			title: {
+				text: indicator_name_cn 
+			},
+			tooltip: {
+				trigger: 'axis'
+			},
+			legend: {
+				data: cs //["邮件营销","联盟广告","视频广告","直接访问","搜索引擎"]
+			},
+			toolbox: {
+				feature: {
+					saveAsImage: {}
+				}
+			},
+			dataZoom: [{
+				id: 'dataZoomX',
+				type: 'slider',
+				xAxisIndex: [0],
+				filterMode: 'filter'
+			}],
+			xAxis: [{
+				type: 'category',
+				boundaryGap: fla,
+				data: ds //["周一","周二","周三","周四","周五","周六","周日1312"]
+			}],
+			yAxis: [{
+				type: 'value',
+				axisLabel: {
+					inside: true,
+					formatter: function(value, index) {
+						var v = 0;
+						//                      console.log(value);
+						if(value >= 100000000) {
+							v = value / 100000000;
+							v += '亿';
+						} else {
+							v = value;
+						}
+						return v;
+					}
+				}
+			}],
+			series: ss
+		});
 	});
-});
+
+}
+
 
 // 点击通过审核
 $(document).on("click", ".pass", function() {
@@ -528,8 +681,8 @@ function editRole(_id, roleVal, all) {
 				$('#dialogPulic').find('.modal-body').text('修改失败！');
 				$('#dialogPulic').modal('show');
 			}
-//			loadUsers(glUser.userN,glUser.userRole,glUser.userId,glUser.userName);
-			roleTabClick(glUser.userN);
+//			loadUsers($("#pageVal").val(),glUser.userRole,glUser.userId,glUser.userName);
+			roleTabClick($("#pageVal").val());
 		},
 		error: function(d) {
 			$('#dialogPulic').find('.modal-body').text("修改失败！" + d.statusText);
@@ -539,31 +692,42 @@ function editRole(_id, roleVal, all) {
 }
 
 // 切换用户列表
-function roleTabClick(n) {
+function roleTabClick(n,role,name) {
 	var _url = window.location.href;
 	var tabId = _url.split('#')[1];
 	$('#' + tabId).click().addClass('active in').siblings().removeClass('active in');
 	switch(tabId) {
 		case 'panel_common':
-			$("#myTab4").find('li').eq(1).click().addClass('active').siblings().removeClass('active');
+			role = '0';
+			$("#myTab4").find('li').eq(1).addClass('active').siblings().removeClass('active');
+			loadUsers(n,role,('#' + tabId));
 			break;
 		case 'panel_expert':
-			$("#myTab4").find('li').eq(2).click().addClass('active').siblings().removeClass('active');
+			role = '1';
+			$("#myTab4").find('li').eq(2).addClass('active').siblings().removeClass('active');
+			loadUsers(n,role,('#' + tabId));
 			break;
 		case 'panel_admin':
-			
-			$("#myTab4").find('li').eq(3).click().addClass('active').siblings().removeClass('active');
+			role = '9';
+			$("#myTab4").find('li').eq(3).addClass('active').siblings().removeClass('active');
+			loadUsers(n,role,('#' + tabId));
 			break;
 		case 'panel_system':
-			$("#myTab4").find('li').eq(4).click().addClass('active').siblings().removeClass('active');
+			role = '2';
+			$("#myTab4").find('li').eq(4).addClass('active').siblings().removeClass('active');
+			loadUsers(n,role,('#' + tabId));
 			break;
 		case 'panel_search':
-			$("#myTab4").find('li').eq(5).click().addClass('active').siblings().removeClass('active');
+			role = 'w';
+			$("#myTab4").find('li').eq(5).addClass('active').siblings().removeClass('active');
+			loadUsers(n,role,('#' + tabId),$('#search_role').val());
 			break;
 		default:
-			$("#myTab4").find('li').eq(0).click().addClass('active').siblings().removeClass('active');
+			$("#myTab4").find('li').eq(0).addClass('active').siblings().removeClass('active');
+			loadUsers(n,null,('#' + tabId));
 			break;
 	}
+	return role;
 }
 
 // 新闻观点列表
@@ -614,7 +778,7 @@ function newViewpoint(n, type, status, id) {
 				var html = '<tr><td class="center">' + e.id + '</td>' +
 					'<td><a href="http://m.jjrb.grsx.cc/' + _src + '.html?id=' + e.id + '" target="_blank">' + e.title + '</a></td>' +
 					'<td class="hidden-xs"><a href="http://m.jjrb.grsx.cc/' + _src_user + '.html?id=' + e.owner.id + '" target="_blank">' + e.owner.name + '</a></td>' +
-					'<td class="center"><a href="javascript:;" class="btn btn-primary btn-xs nvDescp" data-toggle="modal" data-target="#myModal" title="查看详情" data-id="' + e.id + '">详情</a></td>' +
+					'<td class="center"><a href="javascript:void(0)" class="btn btn-primary btn-xs nvDescp" data-toggle="modal" data-target="#myModal" title="查看详情" data-id="' + e.id + '">详情</a></td>' +
 					'<td>' + now_status + '</td>' +
 					'<td class="center"><div>' + statushtml + '</div></td></tr>';
 				switch(status) {
@@ -637,6 +801,55 @@ function newViewpoint(n, type, status, id) {
 		}
 	});
 }
+
+// 点击详情
+$(document).on('click', '.nvDescp', function() {
+	var _id = $(this).attr("data-id"),
+		descp = '',echarts_data;
+	$("#modalHtml").html('');
+	$.ajax({
+		type: "get",
+		url: _href + interfacelist.feed + _id,
+		async: false,
+		data: {
+			token: token
+		},
+		success: function(data) {
+//			console.log(data);
+			$("h4.modal-title").text(data.title);
+			descp += '<div style="margin:10px auto;" id="header_img"><img src="' + data.cover + '" alt="热点图" class="hotspot_img" /></div>';
+			var a = $("<div></div>");
+			data.resources.forEach(function(res, inx) {
+				//				console.log(res);
+				var type = res.type;
+				if(type === 12) { //图片
+					descp += '<img src="' + res.uri + '">'
+				} else if(type === 13) { //文本
+					descp += '<p>' + res.descp + '</p>'
+				} else if(type === 15) { //数据
+					var _id = '';
+					if(res.descp) {
+						res.descp.length < 0 ? echarts_data = res.descp : echarts_data = JSON.parse(res.descp);
+						_id = echarts_data.id_val;
+					}
+					descp += '<div id="' + _id + '" style="min-height:500px;"></div>'
+				} else {
+					descp += res.descp;
+				}
+			});
+			$("#modalHtml").append(descp);
+			
+		},
+		error: function(data, err) {
+			console.log(err);
+		}
+	});
+	setTimeout(function(){
+		if(echarts_data) {
+			urlLoad(echarts_data.id_val, 'http://api.jjrb.grsx.cc/data2?', echarts_data.country, echarts_data.indicator, echarts_data.start, echarts_data.end, echarts_data.echartType);
+		}
+	},500);
+});
 
 // 新闻观点tab标签点击事件
 function newViewpointTabClick(n, type) {
