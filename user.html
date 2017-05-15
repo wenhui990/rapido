@@ -434,6 +434,7 @@
 				
 				$("#pageVal").val(n);
 				role = roleTabClick(n,_name);
+//				loadUsers(n,role,_id,_name);
 				
 				// 点击上一页下一页
 				$(document).on("click", "#prvePage,#nextPage", function() {
@@ -547,7 +548,6 @@
 					window.history.pushState({},0,_id); 
 					loadUsers(n,role,_id,_name);
 				});
-				
 				
 				window.glUser = {
 					'userN':n,

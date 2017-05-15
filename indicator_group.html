@@ -214,7 +214,7 @@
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-							<button type="button" data-dismiss="modal" class="btn btn-success del_btn">确定</button>
+							<button type="button" data-dismiss="modal" class="btn btn-success del_indicator_btn">确定</button>
 						</div>
 					</div>
 				</div>
@@ -352,7 +352,7 @@
 				//				SVExamples.init();
 				UIElements.init();
 				
-				var delType,delUrl,delThis;
+				var delType,delUrl,delThis,del_id;
 				
 				//加载分组列表
 				indicatorAndCountryGroup(n, "group");
@@ -361,16 +361,31 @@
 				// 删除分组
 				$(document).on("click", ".del_indicator_group", function() {
 //					$('#dialogPulic').find('button.btn-success').addClass('del_btn');
-					var _id = $(this).attr("data-id");
-					delThis = $(this);
-					delType = "delete",
-						delUrl = _href + interfacelist.group+_id;
-					
+					del_id = $(this).attr("data-id");
+					delThis = $(this),
+					delUrl = _href + interfacelist.group+del_id+'?token='+token;
+					$('#myDelModal').modal('show');
 				});
-				$(document).on('click', '.del_btn', function() {
-					manageNV(delType, delUrl);
-					delThis.parents('tr').remove();
-//					$('.del_btn').removeClass('del_btn');
+				$(document).on('click', '.del_indicator_btn', function() {
+					$.ajax({
+						type:"delete",
+						url: delUrl,
+						data:{
+							token : token,
+							indicator_id: del_id
+						},
+						success: function(data){
+							$('#myDelModal').modal('hide');
+							if(data.msg==='success'){
+								$('#dialogPulic').find('.modal-body').text('删除成功！');
+								$('#dialogPulic').modal('show');
+								delThis.parents('tr').remove();
+							}else{
+								$('#dialogPulic').find('.modal-body').text('删除失败！');
+								$('#dialogPulic').modal('show');
+							}
+						}
+					});
 				});
 				// 创建分组
 				$(document).on("click", ".caretGroup", function(e) {
@@ -380,7 +395,7 @@
 						descp: $('#inputDescp').val(),
 						type: $("#selectType").val(),
 						parent: $('#inputParent').val(),
-						token: localStorage.token
+						token: token
 					};
 					if (data.name===''||data.descp==='') {
 						alert('名字、描述和类型不能为空！');

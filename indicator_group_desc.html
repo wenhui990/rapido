@@ -185,7 +185,7 @@
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-							<button type="button" data-dismiss="modal" class="btn btn-success del_btn">确定</button>
+							<button type="button" data-dismiss="modal" class="btn btn-success del_indicator_btn">确定</button>
 						</div>
 					</div>
 				</div>
@@ -311,7 +311,7 @@
 				//				SVExamples.init();
 				UIElements.init();
 
-				var id = getUrlParams().id;
+				var id = getUrlParams().id,_pid,del_id;
 
 				// 加载分组详细信息
 				indicatorGroupDescp(n);
@@ -333,7 +333,7 @@
 										'<td>' + e.id + '</td>' +
 										'<td class="hidden-xs">' + name_en + '</td>' +
 										'<td class="hidden-xs">' + data.id + "：" + data.name + '</td>' +
-										'<td class="hidden-xs"><a href="#myDelModal" class="del_indicator_group" data-toggle="modal" data-target="#myDelModal" data-parent-id = "'+data.id+'" data-id="'+e.pid+'" title="删除分组指标"><span class="glyphicon glyphicon-remove-sign"></span></a></td></tr>';
+										'<td class="hidden-xs"><a href="javascript:void(0)" class="del_indicator_group" data-parent-id = "'+data.id+'" data-id="'+e.pid+'" title="删除分组指标"><span class="glyphicon glyphicon-remove-sign"></span></a></td></tr>';
 									$('#indicator_datas_descp').prepend(html);
 								});
 							}
@@ -343,6 +343,39 @@
 						}
 					});
 				}
+				
+				// 点击删除
+				$(document).on("click", ".del_indicator_group", function() {
+					newViewpointDelId = $(this).attr("data-id");
+					newViewpointDelThis = $(this);
+					$('#myDelModal').modal('show');
+					_pid = $(this).attr('data-parent-id');
+					del_id = $(this).attr('data-id');
+				});
+				$('#myDelModal').on('click', '.del_indicator_btn', function() {
+					var type = "delete";
+					$.ajax({
+						type:"delete",
+						url: _href + '/data2/group/'+_pid+'/indicator?token='+token+'&indicator_id='+del_id,
+						data:{
+							token : token,
+							indicator_id: del_id
+						},
+						success: function(data){
+							$('#myDelModal').modal('hide');
+							if(data.msg==='success'){
+								$('#dialogPulic').find('.modal-body').text('删除成功！');
+								$('#dialogPulic').modal('show');
+								newViewpointDelThis.parents('tr').remove();
+							}else{
+								$('#dialogPulic').find('.modal-body').text('删除失败！');
+								$('#dialogPulic').modal('show');
+							}
+						}
+					});
+				});
+				
+				
 
 				// 获取全部指标-添加指标
 //				$(document).on('click', '#add_indicator_list', function() {
@@ -358,7 +391,7 @@
 						data: {
 							page: n,
 							limit: 200,
-							token: localStorage.token
+							token: token
 						},
 						success: function(data) {
 							$.each(data, function(i, e) {
@@ -378,7 +411,7 @@
 						url: _href + '/data2/group/' + groupId + '/indicator',
 						async: true,
 						data: {
-							token: localStorage.token,
+							token: token,
 							indicator_id: $(this).attr('data-id'),
 						},
 						success: function(data) {
@@ -492,28 +525,31 @@
 				});
 				
 				// 删除指标
-				$(document).on('click','.del_indicator_group',function(){
-					var _pid = $(this).attr('data-parent-id');
-					var _id = $(this).attr('data-id');
-					$(this).parents('tr').remove();
-					$('.del_btn').click(function(){
-						$.ajax({
-							type:"delete",
-							url: _href + '/data2/group/'+_pid+'/indicator?token='+localStorage.token+'&indicator_id='+_id,
+//				$(document).on('click','.del_indicator_group',function(){
+//					var _pid = $(this).attr('data-parent-id');
+//					var _id = $(this).attr('data-id');
+//					$(this).parents('tr').remove();
+//					$('.del_btn').click(function(){
+//						$.ajax({
+//							type:"delete",
+//							url: _href + '/data2/group/'+_pid+'/indicator?token='+localStorage.token+'&indicator_id='+_id,
 //							data:{
 //								token : localStorage.token,
 //								indicator_id: _id
 //							},
-							success: function(data){
-								if(data.msg==='success'){
-									$('#dialogPulic').find('.modal-body').text('删除成功！');
-									$('#dialogPulic').modal('show');
-								}
-							}
-						});
-					});
-					
-				});
+//							success: function(data){
+//								if(data.msg==='success'){
+//									$('#dialogPulic').find('.modal-body').text('删除成功！');
+//									$('#dialogPulic').modal('show');
+//								}else{
+//									$('#dialogPulic').find('.modal-body').text('删除失败！');
+//									$('#dialogPulic').modal('show');
+//								}
+//							}
+//						});
+//					});
+//					
+//				});
 			});
 		</script>
 	</body>

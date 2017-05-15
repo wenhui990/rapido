@@ -37,6 +37,7 @@ function isAdmin(uid){
 				$('#dialogPulic').on('hide.bs.modal',function(){
 					$('.wxPhoneLogin').show();
 					$('.login_phone').click();
+					$('.log-out').click();
 				});
 			}
 		}
@@ -923,7 +924,7 @@ function indicatorAndCountryGroup(n, type) {
 						'<span class="edit_name_descp none"><span class="glyphicon glyphicon-ok edit_ok" title="确定修改"></span><span class="glyphicon glyphicon-remove edit_change" title="取消修改"></span></span></td>' +
 						'<td class="hidden-xs">' + _type + '</td>' +
 						'<td class="center"><a class="btn btn-default" href="indicator_group_desc.html?id=' + e.id + '">配置</a></td>' +
-						'<td class="hidden-xs"><a href="#myDelModal" class="del_indicator_group" data-toggle="modal" data-target="#myDelModal" data-id="' + e.id + '" title="删除分组指标"><span class="glyphicon glyphicon-remove-sign"></span></a></td></tr>';
+						'<td class="hidden-xs"><a href="javascript:void(0)" class="del_indicator_group" data-id="' + e.id + '" title="删除分组指标"><span class="glyphicon glyphicon-remove-sign"></span></a></td></tr>';
 					$('#indicator_group_datas').append(html);
 				} else if(type.indexOf("indicator.html") >= 0) { //指标
 					var html = '<tr><td class="center">' + e.pid + '</td>' +
