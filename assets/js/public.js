@@ -678,12 +678,18 @@ function editRole(_id, roleVal, all) {
 			if(data.code === 1 || data.msg === "success") {
 				$('#dialogPulic').find('.modal-body').text('修改成功！');
 				$('#dialogPulic').modal('show');
+				if (all) {
+					$('[data-edit="true"]').find('td').eq(2).text($('#inputName').val());
+					$('[data-edit="true"]').find('td').eq(3).text($('#inputSign').val());
+					$('[data-edit="true"]').find('td').eq(1).find('img').attr('src',$('#imgShow').attr('src'));
+				}
 			} else {
 				$('#dialogPulic').find('.modal-body').text('修改失败！');
 				$('#dialogPulic').modal('show');
 			}
+			$('[data-edit="true"]').removeAttr('data-edit');
 //			loadUsers($("#pageVal").val(),glUser.userRole,glUser.userId,glUser.userName);
-			roleTabClick($("#pageVal").val());
+//			roleTabClick($("#pageVal").val());
 		},
 		error: function(d) {
 			$('#dialogPulic').find('.modal-body').text("修改失败！" + d.statusText);
@@ -759,6 +765,7 @@ function newViewpoint(n, type, status, id) {
 			}
 
 			$.each(data, function(i, e) {
+//				if(e.title=='') return true;
 				var statushtml, now_status;
 				if(e.status === 0) {
 					statushtml = '<a href="#" class="btn btn-success btn-xs pass" data-id="' + e.id + '" title="审核通过"><span class="glyphicon glyphicon-ok"></span></a>' +

@@ -317,12 +317,6 @@
 										<input type="text" class="form-control" id="inputName" placeholder="请输入用户名">
 									</div>
 								</div>
-								<div class="form-group">
-									<label for="inputSign" class="col-sm-2 control-label">个性签名</label>
-									<div class="col-sm-10">
-										<input type="text" class="form-control" id="inputSign" placeholder="请输入个性签名">
-									</div>
-								</div>
 								<!--<div class="form-group">
 									<label for="inputIntro" class="col-sm-2 control-label">自我介绍</label>
 									<div class="col-sm-10">
@@ -350,6 +344,13 @@
 										</div>
 									</div>
 									
+								</div>
+								<div class="form-group">
+									<label for="inputSign" class="col-sm-2 control-label">个性签名</label>
+									<div class="col-sm-10">
+										<textarea type="text" class="form-control" id="inputSign" placeholder="请输入个性签名">
+										</textarea>
+									</div>
 								</div>
 							</form>
 						</div>
@@ -501,8 +502,6 @@
 				$(document).on("change", ".roles", function() {
 					var role = $(this).val();
 					var _idEdit = $(this).parents("tr").find("td").first().text();
-					$(this).find('option').attr('selected','false');
-					//					console.log(_id);
 					editRole(_idEdit, role);
 				});
 
@@ -526,11 +525,10 @@
 							$('#inputSign').val(data.sign);
 							$(':radio[name="gender"][value="'+data.gender+'"]').attr('checked','true');
 							$(imgId).attr('src',data.head);
-//							$('.edit_role').off();
 						}
 					});
 					$('#dialogRole').modal('show');
-					
+					$(this).parent().attr('data-edit','true');
 				});
 				$('.edit_role_ok').click(function(){
 					editRole(userId, "",'userEdit');
